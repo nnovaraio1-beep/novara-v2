@@ -1,0 +1,549 @@
+{
+  "nav": {
+    "home": "Home",
+    "services": "Services",
+    "social": "Social Solutions",
+    "store": "Store",
+    "portfolio": "Our Work",
+    "about": "About",
+    "contact": "Contact",
+    "signIn": "Sign in",
+    "cta": "Start a project",
+    "cart": "Cart",
+    "mainNav": "Main navigation",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "blog": "Blog",
+    "faq": "FAQ"
+  },
+  "hero": {
+    "eyebrow": "Technology · Creative · Digital Marketing",
+    "titleA": "We build the brand, the platform and the",
+    "titleHighlight": "growth behind it.",
+    "subtitle": "NOVARA is a technology, creative and digital marketing company . Strategy, design and engineering under one team — measured against results you can actually .",
+    "primary": "Start a project",
+    "secondary": "Explore the store",
+    "imageAlt": "A managed social media presence, planned and designed by NOVARA",
+    "trust": {
+      "a": "Bilingual, RTL-first delivery",
+      "b": "Fixed scope, written up front",
+      "c": "No fake metrics, ever"
+    }
+  },
+  "capabilities": {
+    "title": "What we do under one roof",
+    "social": "Social Media",
+    "branding": "Branding",
+    "video": "AI Video",
+    "web": "Websites",
+    "ecommerce": "E-commerce",
+    "software": "Software & AI"
+  },
+  "featuredServices": {
+    "eyebrow": "Services",
+    "title": "Capabilities that ship, not slideware",
+    "lead": "Six core practices, each measured before anything goes live. Explore what a partnership looks like in each.",
+    "viewAll": "View all services"
+  },
+  "featuredPackages": {
+    "eyebrow": "Store",
+    "title": "Monthly social media packages",
+    "lead": "Managed social presence billed monthly. Change tier or cancel at the end of any month.",
+    "popular": "Most popular",
+    "choose": "View package",
+    "viewAll": "See all packages and pricing"
+  },
+  "why": {
+    "eyebrow": "Why NOVARA",
+    "title": "Built to be owned, not rented",
+    "a": {
+      "title": "One team, one accountability",
+      "body": "Strategy, creative and engineering sit together, so nothing gets lost in a hand-off between agencies."
+    },
+    "b": {
+      "title": "Bilingual from the first sketch",
+      "body": "Arabic and English are designed side by side, not translated at the end. RTL is native, never retrofitted."
+    },
+    "c": {
+      "title": "Measured before it ships",
+      "body": "We take a baseline first and report against it. If something is not working, you hear it early."
+    },
+    "d": {
+      "title": "You own the result",
+      "body": "Source files, documentation and training come with every handover. No black boxes, no lock-in."
+    }
+  },
+  "process": {
+    "eyebrow": "How we work",
+    "title": "A process with no surprises",
+    "discover": {
+      "title": "Discover",
+      "body": "We map the goal, the audience and the baseline before proposing anything."
+    },
+    "design": {
+      "title": "Design",
+      "body": "Concepts and scope are fixed in writing, in both languages, before build."
+    },
+    "build": {
+      "title": "Build",
+      "body": "We build in the open with regular reviews, so there are no reveal-day shocks."
+    },
+    "handover": {
+      "title": "Handover",
+      "body": "You get the files, the documentation and the training to run it yourself."
+    }
+  },
+  "faq": {
+    "eyebrow": "FAQ",
+    "title": "Questions worth asking first",
+    "a": {
+      "q": "Do you work in Arabic and English?",
+      "a": "Yes. Every project is bilingual and RTL-first by default. Arabic is designed alongside English, not translated after the fact."
+    },
+    "b": {
+      "q": "Is advertising spend included in your prices?",
+      "a": "No. Ad budget is paid directly to the platform so you keep full control and visibility. Our fee is for the work, never the media."
+    },
+    "c": {
+      "q": "Do I have to sign a long contract?",
+      "a": "Monthly packages run month to month — give notice before the next cycle and they stop. Projects are fixed-scope and quoted up front."
+    },
+    "d": {
+      "q": "Who owns the final work?",
+      "a": "You do, once the invoice is settled. That includes source files, documentation and, for software, the full codebase."
+    },
+    "subtitle": "The questions we're asked most often, answered plainly.",
+    "items": {
+      "a": {
+        "q": "Do you work in Arabic and English?",
+        "a": "Yes. Every project is bilingual and RTL-first by default. Arabic is designed alongside English, not translated afterwards."
+      },
+      "b": {
+        "q": "Is advertising spend included in your prices?",
+        "a": "No. Ad budget is paid directly to the platform so you keep full control and visibility. Our fee is for the work, never the media."
+      },
+      "c": {
+        "q": "Do I have to sign a long contract?",
+        "a": "Monthly packages run month to month — give notice before the next cycle and they stop. Projects are fixed-scope and quoted up front."
+      },
+      "d": {
+        "q": "Who owns the final work?",
+        "a": "You do, once the invoice is settled — including source files, documentation and, for software, the full codebase."
+      },
+      "e": {
+        "q": "Do I need an account to buy?",
+        "a": "No. You can browse, add to cart and check out as a guest. An account is optional and only stores your history."
+      },
+      "f": {
+        "q": "How do payments work right now?",
+        "a": "Online card payment is enabled only once a provider is configured. Until then, checkout offers bank transfer and written quotations — never a form that pretends to charge you."
+      }
+    }
+  },
+  "cta": {
+    "title": "Tell us what you're building. We'll tell you honestly if we can help.",
+    "subtitle": "A short call, a clear scope, a written quotation. No pressure and no fake urgency.",
+    "primary": "Start a project",
+    "secondary": "Browse the store"
+  },
+  "services": {
+    "eyebrow": "Services",
+    "title": "Everything under one team",
+    "subtitle": "Six practices, from social growth to cloud infrastructure. Each is measured before it ships and handed over so you can run it.",
+    "from": "From",
+    "viewDetails": "View details"
+  },
+  "serviceDetail": {
+    "breadcrumb": "Breadcrumb",
+    "services": "Services",
+    "from": "From",
+    "overview": "Overview",
+    "deliverables": "What you get",
+    "process": "How it works",
+    "related": "Related services",
+    "requestQuote": "Request a quotation",
+    "viewPackages": "View packages"
+  },
+  "store": {
+    "eyebrow": "Store",
+    "title": "Packages and pricing",
+    "subtitle": "Clear scopes and clear prices. Monthly subscriptions and one-time projects, never mixed together.",
+    "popular": "Most popular",
+    "from": "From",
+    "pricing": "Pricing",
+    "total": "Total",
+    "viewPackage": "View package",
+    "requestQuote": "Request a quotation",
+    "addToCart": "Add to cart",
+    "added": "Added to cart",
+    "buyNow": "Buy now",
+    "addons": "Optional add-ons",
+    "noAccountNeeded": "No account required. Check out as a guest and create one later if you want.",
+    "customQuoteBody": "This package is scoped and priced individually. Tell us what you need and we'll come back with a written quotation.",
+    "customTitle": "Need something outside these packages?",
+    "customBody": "Multi-brand programmes, custom software, enterprise infrastructure — we scope these individually.",
+    "customCta": "Request a custom quotation"
+  },
+  "packageDetail": {
+    "breadcrumb": "Breadcrumb",
+    "store": "Store",
+    "platforms": "Platforms",
+    "posts": "Posts / month",
+    "stories": "Stories / month",
+    "videos": "Videos / month",
+    "included": "What's included",
+    "related": "Related packages"
+  },
+  "social": {
+    "eyebrow": "Social Solutions",
+    "title": "Social media management, priced clearly",
+    "subtitle": "Four monthly tiers and an enterprise option. Change tier or cancel at the end of any month.",
+    "popular": "Most popular",
+    "choose": "Choose plan",
+    "requestQuote": "Request a quotation",
+    "enterpriseTag": "Enterprise",
+    "adSpendNote": "Advertising spend is paid directly to the platform and is never included in the package price."
+  },
+  "cart": {
+    "eyebrow": "Cart",
+    "title": "Your selection",
+    "subtitle": "No account needed. Review your packages and check out as a guest.",
+    "empty": "Your cart is empty",
+    "emptyBody": "Browse the store and add a package to get started.",
+    "browse": "Browse packages",
+    "remove": "Remove item",
+    "decrease": "Decrease quantity",
+    "increase": "Increase quantity",
+    "subscriptionQty": "Monthly subscription · quantity fixed at 1",
+    "quoteOnly": "Quotation",
+    "summary": "Order summary",
+    "subtotal": "Subtotal",
+    "tax": "Tax",
+    "total": "Total",
+    "atCheckout": "Calculated at checkout",
+    "quoteNotice": "Your cart contains a package that is quoted individually. We'll send a written quotation rather than charge you now.",
+    "checkout": "Proceed to enquiry",
+    "continue": "Continue shopping",
+    "guestOk": "You can check out without creating an account."
+  },
+  "auth": {
+    "loginTitle": "Sign in",
+    "loginSubtitle": "Access your orders, quotations and invoices.",
+    "email": "Email",
+    "password": "Password",
+    "signIn": "Sign in",
+    "notConfigured": "Accounts are not yet enabled on this deployment. Browsing, cart and guest checkout all work without one.",
+    "guestTitle": "You don't need an account",
+    "guestBody": "Browse, add to cart and check out as a guest. Create an account later if you want your order history.",
+    "continueAsGuest": "Continue as guest",
+    "noAccount": "No account yet?",
+    "contactUs": "Contact us",
+    "registerTitle": "Create an account",
+    "registerSubtitle": "Optional. You can order without one.",
+    "forgotTitle": "Reset your password",
+    "forgotSubtitle": "We'll email you a reset link.",
+    "fullName": "Full name",
+    "remember": "Remember me",
+    "forgot": "Forgot your password?",
+    "passwordHint": "At least 12 characters. Longer is better than more symbols.",
+    "createAccount": "Create account",
+    "sendReset": "Send reset link",
+    "backToLogin": "Back to sign in",
+    "resetPrivacy": "If an account exists for that address, we'll send a reset link. We don't reveal whether an address is registered.",
+    "register": "Create one",
+    "haveAccount": "Already have an account?",
+    "orContinueWith": "Or continue with",
+    "notConfiguredShort": "not configured",
+    "providers": {
+      "google": "Continue with Google",
+      "apple": "Continue with Apple",
+      "microsoft": "Continue with Microsoft"
+    },
+    "showPassword": "Show password",
+    "hidePassword": "Hide password"
+  },
+  "contact": {
+    "eyebrow": "Contact",
+    "title": "Let's talk about your project",
+    "subtitle": "Tell us what you're building. We'll reply within one business day with next steps.",
+    "form": {
+      "name": "Full name",
+      "email": "Email",
+      "company": "Company",
+      "phone": "Phone",
+      "message": "How can we help?",
+      "submit": "Send message"
+    },
+    "formNote": "This is a demo form. Connect a form handler or email service before going live.",
+    "emailLabel": "Email",
+    "whatsappLabel": "WhatsApp",
+    "officeLabel": "Office",
+    "hoursLabel": "Hours",
+    "address": "Amman, Jordan",
+    "hours": "Sun–Thu, 9:00–18:00"
+  },
+  "about": {
+    "eyebrow": "About",
+    "title": "A company built around ownership",
+    "subtitle": "NOVARA brings strategy, creative and engineering under one team in Amman — so your brand, platform and growth are built by people who talk to each other.",
+    "storyTitle": "Who we are",
+    "storyA": "NOVARA is a technology, creative and digital marketing company. We started because too many brands were stuck between a design agency, a dev shop and a media buyer who never spoke to one another.",
+    "storyB": "So we put all three under one roof, working in Arabic and English from the first sketch. The result is fewer hand-offs, clearer accountability, and work you actually own at the end.",
+    "values": {
+      "approach": {
+        "title": "One accountable team",
+        "body": "Strategy, creative and engineering in one place — no finger-pointing between vendors."
+      },
+      "bilingual": {
+        "title": "Bilingual by default",
+        "body": "Arabic and English designed together. RTL is native, not an afterthought."
+      },
+      "measured": {
+        "title": "Measured, not guessed",
+        "body": "We take a baseline and report against it. Honest numbers over vanity metrics."
+      },
+      "ownership": {
+        "title": "You own it",
+        "body": "Files, documentation and training at every handover. No lock-in."
+      }
+    },
+    "ctaTitle": "Let's build something you own.",
+    "ctaButton": "Start a conversation"
+  },
+  "portfolio": {
+    "eyebrow": "Our Work",
+    "title": "Selected concept work",
+    "subtitle": "A look at how we approach each discipline. These are concept pieces that demonstrate our standards.",
+    "conceptNote": "The pieces below are concept projects created to demonstrate our approach and quality bar. They are clearly labelled and are not presented as client work.",
+    "conceptBadge": "Concept Project",
+    "viewProject": "View project",
+    "brief": "The brief",
+    "approach": "Our approach",
+    "disciplines": "Disciplines",
+    "startSimilar": "Start something similar",
+    "moreWork": "More work"
+  },
+  "careers": {
+    "eyebrow": "Careers",
+    "title": "Work at NOVARA",
+    "subtitle": "We hire people who care about craft and about telling clients the truth.",
+    "openTitle": "No open roles right now",
+    "openBody": "We're not actively hiring, but we always like meeting thoughtful designers, engineers and strategists. Send us your work.",
+    "cta": "Introduce yourself"
+  },
+  "privacy": {
+    "eyebrow": "Legal",
+    "title": "Privacy Policy",
+    "subtitle": "How we handle the information you share with us. This is a template and should be reviewed by a lawyer before launch.",
+    "s": {
+      "a": {
+        "h": "What we collect",
+        "p": "Contact details you submit through forms, and standard analytics about how the site is used. This template describes intent; wire it to your real data practices before launch."
+      },
+      "b": {
+        "h": "How we use it",
+        "p": "To respond to enquiries, deliver services you request, and improve the site. We do not sell personal data."
+      },
+      "c": {
+        "h": "Your choices",
+        "p": "You can request access to or deletion of your data at any time by contacting us. Analytics can be declined at the browser level."
+      },
+      "d": {
+        "h": "Contact",
+        "p": "For any privacy question, email hello@nnovara.io and we'll respond within a reasonable period."
+      }
+    },
+    "updated": "This is a template policy. Replace with reviewed legal text before going live."
+  },
+  "terms": {
+    "eyebrow": "Legal",
+    "title": "Terms of Service",
+    "subtitle": "The terms under which we provide services. This is a template and should be reviewed by a lawyer before launch.",
+    "s": {
+      "a": {
+        "h": "Scope of work",
+        "p": "Every engagement is defined by a written scope agreed before work begins. Anything outside it is quoted separately."
+      },
+      "b": {
+        "h": "Payment",
+        "p": "Monthly packages are billed in advance. One-time projects follow the milestone schedule in your quotation. Advertising spend is never included."
+      },
+      "c": {
+        "h": "Ownership",
+        "p": "You own the final deliverables once the invoice is settled, including source files and, for software, the codebase."
+      },
+      "d": {
+        "h": "Cancellation",
+        "p": "Monthly packages can be cancelled at the end of any billing month with notice before the next cycle."
+      }
+    },
+    "updated": "This is a template. Replace with reviewed legal text before going live."
+  },
+  "footer": {
+    "company": "Company",
+    "services": "Services",
+    "resources": "Resources",
+    "contactCol": "Contact",
+    "blurb": "A technology, creative and digital marketing company in Amman. Strategy, creative and engineering under one team.",
+    "links": {
+      "about": "About",
+      "portfolio": "Our Work",
+      "careers": "Careers",
+      "contact": "Contact",
+      "social": "Social Media",
+      "branding": "Branding",
+      "web": "Web Development",
+      "ecommerce": "E-commerce",
+      "ai": "AI Solutions",
+      "store": "Store",
+      "faq": "FAQ",
+      "privacy": "Privacy",
+      "terms": "Terms",
+      "blog": "Blog"
+    },
+    "whatsapp": "Message us on WhatsApp",
+    "address": "Amman, Jordan",
+    "rights": "All rights reserved."
+  },
+  "checkout": {
+    "title": "Checkout",
+    "guestNotice": "Checking out as a guest. You can create an account afterwards using the same email.",
+    "emptyTitle": "There is nothing to check out",
+    "browse": "Browse packages",
+    "steps": {
+      "info": "Your details",
+      "review": "Review",
+      "addons": "Add-ons",
+      "billing": "Billing",
+      "payment": "Payment"
+    },
+    "fields": {
+      "fullName": "Full name",
+      "email": "Email",
+      "phone": "Phone",
+      "company": "Company",
+      "country": "Country",
+      "city": "City",
+      "address": "Address",
+      "taxNumber": "Tax number",
+      "coupon": "Coupon code",
+      "notes": "Order notes"
+    },
+    "addonsBody": "These add-ons were selected with your packages.",
+    "noAddons": "No add-ons selected.",
+    "monthly": "Monthly",
+    "oneTime": "One-time",
+    "quoteOnly": "Quotation",
+    "paymentMethod": "Payment method",
+    "methods": {
+      "online": {
+        "title": "Pay online",
+        "body": "Card payment through our provider. You are redirected to their secure page; we never see your card details."
+      },
+      "bank_transfer": {
+        "title": "Bank transfer",
+        "body": "We send you our bank details and an invoice. Work begins once the transfer clears."
+      },
+      "quotation": {
+        "title": "Request a quotation",
+        "body": "No payment now. We review your selection and send a written quotation."
+      }
+    },
+    "noGatewayNotice": "Online card payment is not enabled on this site yet. You can pay by bank transfer or request a written quotation, and we'll take it from there.",
+    "acceptTerms": "I accept the terms of service",
+    "acceptPrivacy": "I accept the privacy policy",
+    "back": "Back",
+    "next": "Continue",
+    "placeOrder": "Place order",
+    "submitQuote": "Request quotation",
+    "summary": "Order summary",
+    "total": "Total",
+    "serverPriceNotice": "The final amount is calculated on our server from the packages you selected. Prices here are for reference.",
+    "errors": {
+      "generic": "Something went wrong. Nothing was charged.",
+      "network": "We could not reach the server. Nothing was charged.",
+      "unavailable": "Online payment is unavailable right now. Please choose bank transfer or request a quotation."
+    }
+  },
+  "orderSuccess": {
+    "title": "Thank you",
+    "lead": "We have your request. Here is where it stands.",
+    "noOrder": "We could not find an order reference in this link.",
+    "browse": "Browse packages",
+    "loading": "Checking the status of your order…",
+    "confirmed": "Payment confirmed",
+    "awaitingPayment": "Awaiting payment confirmation",
+    "awaitingTransfer": "Awaiting bank transfer",
+    "quoteReceived": "Quotation request received",
+    "orderNumber": "Order number",
+    "total": "Total",
+    "monthly": "Monthly",
+    "oneTime": "One-time",
+    "bankInstructions": "We'll email our bank details and an invoice within one business day. Work begins once the transfer clears.",
+    "nextSteps": "What happens next",
+    "responseTime": "A named account manager replies within one business day with a kickoff plan and a written scope.",
+    "createAccount": "Create an account",
+    "support": "Contact support"
+  },
+  "orderFailed": {
+    "title": "Payment was not completed",
+    "lead": "The payment did not go through, or it was cancelled.",
+    "noCharge": "Nothing was charged. Your cart is unchanged.",
+    "retry": "Try again",
+    "contact": "Contact us"
+  },
+  "account": {
+    "eyebrow": "Account",
+    "title": "Your account",
+    "subtitle": "Orders, quotations, invoices and project status in one place.",
+    "unavailableTitle": "Accounts are not enabled yet",
+    "unavailableBody": "This deployment has no database or authentication secret configured, so sign-in is switched off rather than shown as a broken form.",
+    "browse": "Browse packages",
+    "contact": "Contact us",
+    "guestReminder": "Browsing, cart and guest checkout work without an account.",
+    "logout": "Sign out",
+    "panels": {
+      "profile": {
+        "title": "Profile",
+        "body": "Your name, email, company and tax details."
+      },
+      "orders": {
+        "title": "Orders",
+        "body": "Every order, with its current status."
+      },
+      "quotations": {
+        "title": "Quotations",
+        "body": "Written quotations we've sent you."
+      },
+      "saved": {
+        "title": "Saved packages",
+        "body": "Packages you've bookmarked for later."
+      },
+      "invoices": {
+        "title": "Invoices",
+        "body": "View, print or email any invoice."
+      },
+      "projects": {
+        "title": "Project status",
+        "body": "Where each active project stands."
+      },
+      "support": {
+        "title": "Support requests",
+        "body": "Open a ticket and track replies."
+      }
+    }
+  },
+  "blog": {
+    "eyebrow": "Blog",
+    "title": "Notes on how we work",
+    "subtitle": "Occasional writing on design, AI and building things that last — in Arabic and English.",
+    "readMore": "Read more",
+    "more": "More posts"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "body": "The page you're looking for doesn't exist or may have moved. Let's get you back on track.",
+    "home": "Go home",
+    "services": "Browse services"
+  }
+}

@@ -1,0 +1,6 @@
+.admin-cta {
+  display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 16px;
+  border-radius: 9px; font-size: 14px; font-weight: 600; background: #3b82f6; color: #fff;
+  text-decoration: none; border: none; cursor: pointer;
+}
+.admin-cta:hover { background: #2563eb; }

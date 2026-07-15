@@ -1,0 +1,40 @@
+{
+  "name": "novara-v2",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "postinstall": "prisma generate",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate deploy",
+    "db:migrate:dev": "prisma migrate dev",
+    "db:push": "prisma db push",
+    "admin:setup": "tsx scripts/create-super-admin.ts",
+    "seed": "tsx scripts/seed-content.ts"
+  },
+  "dependencies": {
+    "next": "15.1.9",
+    "react": "19.0.2",
+    "react-dom": "19.0.2",
+    "next-intl": "3.26.3",
+    "framer-motion": "11.15.0",
+    "lucide-react": "0.468.0",
+    "@prisma/client": "6.1.0",
+    "@node-rs/argon2": "2.0.2"
+  },
+  "devDependencies": {
+    "@types/node": "22.10.5",
+    "@types/react": "19.0.2",
+    "@types/react-dom": "19.0.2",
+    "typescript": "5.7.2",
+    "tailwindcss": "4.1.14",
+    "@tailwindcss/postcss": "4.1.14",
+    "eslint": "9.17.0",
+    "eslint-config-next": "15.1.9",
+    "prisma": "6.1.0",
+    "tsx": "4.19.2"
+  }
+}
