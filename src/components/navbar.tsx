@@ -73,7 +73,7 @@ export function Navbar() {
       {open && (
         <div className="fixed inset-0 z-[100] flex flex-col lg:hidden" style={{ backgroundColor: "#040711" }}>
           <div className="container-x flex h-20 items-center justify-between">
-            <Image src="/brand/novara-logo.png" alt="NOVARA" width={320} height={76} className="h-[90px] w-auto" />
+            <Image src="/brand/novara-logo.png" alt="NOVARA" width={320} height={76} className="h-[62px] w-auto" />
             <button onClick={() => setOpen(false)} aria-label={t("closeMenu")} className="grid size-11 place-items-center rounded-xl border border-[--border-hairline] text-[--color-text-muted]">
               <X className="size-5" aria-hidden />
             </button>
