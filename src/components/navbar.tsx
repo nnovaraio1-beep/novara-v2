@@ -38,7 +38,7 @@ export function Navbar() {
       <nav className="container-x flex h-20 items-center justify-between gap-8" aria-label={t("mainNav")}>
         <div className="flex items-center gap-10 xl:gap-12">
           <Link href="/" aria-label={t("home")} className="shrink-0">
-            <Image src="/brand/novara-logo.png" alt="NOVARA" width={320} height={76} priority className="h-[64px] w-auto" sizes="280px" />
+            <Image src="/brand/novara-logo.png" alt="NOVARA" width={320} height={76} priority className="h-11 w-auto lg:h-[64px]" sizes="280px" />
           </Link>
           <ul className="hidden items-center gap-1 lg:flex">
             {NAV.map(({ key, href }) => (
@@ -73,7 +73,7 @@ export function Navbar() {
       {open && (
         <div className="fixed inset-0 z-[100] flex flex-col lg:hidden" style={{ backgroundColor: "#040711" }}>
           <div className="container-x flex h-20 items-center justify-between">
-            <Image src="/brand/novara-logo.png" alt="NOVARA" width={320} height={76} className="h-[62px] w-auto" />
+            <Image src="/brand/novara-logo.png" alt="NOVARA" width={320} height={76} className="h-11 w-auto lg:h-[64px]" />
             <button onClick={() => setOpen(false)} aria-label={t("closeMenu")} className="grid size-11 place-items-center rounded-xl border border-[--border-hairline] text-[--color-text-muted]">
               <X className="size-5" aria-hidden />
             </button>
