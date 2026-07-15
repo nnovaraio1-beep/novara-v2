@@ -2,7 +2,7 @@ import { requireDb, db } from "@/server/db";
 import { hashPassword, verifyPassword, passwordIssues } from "@/server/admin/password";
 import { createCustomerSession, setCustomerCookie, getCustomerSession, clearCustomerCookie, revokeCustomerSession } from "./session";
 
-/** رسالة دخول موحّدة (ما نكشف إذا الإيميل موجود أو لأ — للأمان). */
+/** ثوابت رسائل موحّدة (ما نكشف إذا الإيميل موجود أو لأ — للأمان). */
 const GENERIC_LOGIN_ERROR = "Invalid email or password.";
 
 export interface AuthResult { ok: boolean; error?: string; fieldErrors?: Record<string, string>; }
@@ -64,7 +64,30 @@ export async function getCurrentCustomer() {
   if (!ctx) return null;
   const customer = await db.customer.findUnique({
     where: { id: ctx.customerId },
-    select: { id: true, name: true, email: true, phone: true, company: true, locale: true },
+    select: { id: true, name: true, email: true, phone: true, company: true, taxNumber: true, locale: true },
   });
   return customer;
+}
+
+/** تحديث بيانات العميل (الاسم، التلفون، الشركة، الرقم الضريبي). */
+export async function updateCustomerProfile(input: { name?: string; phone?: string; company?: string; taxNumber?: string }): Promise<AuthResult> {
+  const ctx = await getCustomerSession();
+  if (!ctx) return { ok: false, error: "Not signed in." };
+  const database = requireDb();
+
+  const fieldErrors: Record<string, string> = {};
+  const name = input.name?.trim();
+  if (name !== undefined && name.length < 2) fieldErrors.name = "Please enter your name.";
+  if (Object.keys(fieldErrors).length) return { ok: false, fieldErrors };
+
+  await database.customer.update({
+    where: { id: ctx.customerId },
+    data: {
+      ...(name ? { name } : {}),
+      phone: input.phone?.trim() || null,
+      company: input.company?.trim() || null,
+      taxNumber: input.taxNumber?.trim() || null,
+    },
+  });
+  return { ok: true };
 }
