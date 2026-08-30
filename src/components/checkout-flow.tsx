@@ -8,6 +8,7 @@ import { formatPrice } from "@/lib/pricing";
 import { PACKAGES } from "@/data/packages";
 import { SERVICES } from "@/data/services";
 import { ADDONS } from "@/data/addons";
+import { POLICY_VERSION } from "@/data/legal";
 
 type Step = 0 | 1 | 2 | 3 | 4;
 type Method = "online" | "bank_transfer" | "quotation";
@@ -54,7 +55,7 @@ export function CheckoutFlow({ onlineAvailable, manualAvailable }: { onlineAvail
     setBusy(true); setError(null);
     try {
       const res = await fetch("/api/checkout/session", { method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, locale, acceptTerms: String(form.acceptPolicies), acceptPrivacy: String(form.acceptPolicies), acceptRefund: String(form.acceptPolicies), acceptDelivery: String(form.acceptPolicies), policyVersion: "2026-08-30", paymentMethod: method,
+        body: JSON.stringify({ ...form, locale, acceptTerms: String(form.acceptPolicies), acceptPrivacy: String(form.acceptPolicies), acceptRefund: String(form.acceptPolicies), acceptDelivery: String(form.acceptPolicies), policyVersion: POLICY_VERSION, paymentMethod: method,
           lines: cart.lines.map((l) => ({ slug: l.slug, kind: findItem(l.slug)?.kind ?? "package", quantity: l.quantity, addons: l.addons })) }) });
       const data = await res.json();
       if (!res.ok) { setError(data.error === "online_payment_unavailable" ? t("errors.unavailable") : t("errors.generic")); setBusy(false); return; }
