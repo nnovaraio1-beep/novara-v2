@@ -7,16 +7,16 @@ import { formatPrice } from "@/lib/pricing";
 
 interface OrderData { orderNumber: string; status: string; paymentConfirmed: boolean; totalFils: number; requiresQuote: boolean; lines: { name: string; quantity: number; billing: string }[] }
 
-export function OrderStatusView({ orderNumber, mode }: { orderNumber: string | null; mode: string | null }) {
+export function OrderStatusView({ orderNumber, accessToken, mode }: { orderNumber: string | null; accessToken: string | null; mode: string | null }) {
   const t = useTranslations("orderSuccess");
   const locale = useLocale();
   const [data, setData] = useState<OrderData | null>(null);
-  const [loading, setLoading] = useState(Boolean(orderNumber));
+  const [loading, setLoading] = useState(Boolean(orderNumber && accessToken));
 
   useEffect(() => {
-    if (!orderNumber) return;
-    fetch(`/api/orders/${encodeURIComponent(orderNumber)}`).then((r) => r.ok ? r.json() : null).then(setData).catch(() => setData(null)).finally(() => setLoading(false));
-  }, [orderNumber]);
+    if (!orderNumber || !accessToken) return;
+    fetch(`/api/orders/${encodeURIComponent(orderNumber)}?access=${encodeURIComponent(accessToken)}`).then((r) => r.ok ? r.json() : null).then(setData).catch(() => setData(null)).finally(() => setLoading(false));
+  }, [orderNumber, accessToken]);
 
   if (!orderNumber) return <div className="card mt-10 p-8"><p className="text-[--color-text-muted]">{t("noOrder")}</p><Link href="/store" className="btn btn-primary btn-md mt-6">{t("browse")}</Link></div>;
   if (loading) return <div className="card mt-10 flex items-center gap-3 p-8"><Loader2 className="size-4 animate-spin" aria-hidden />{t("loading")}</div>;

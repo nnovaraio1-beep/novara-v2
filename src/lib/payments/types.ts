@@ -7,7 +7,7 @@ export type OrderStatus = (typeof ORDER_STATUSES)[number];
 export const SUBSCRIPTION_STATUSES = ["trialing","active","past_due","paused","cancelled","expired"] as const;
 export type SubscriptionStatus = (typeof SUBSCRIPTION_STATUSES)[number];
 
-export type ProviderId = "stripe" | "paypal" | "hyperpay" | "tap" | "myfatoorah" | "bank_transfer" | "mock";
+export type ProviderId = "capital_bank" | "stripe" | "paypal" | "hyperpay" | "tap" | "myfatoorah" | "bank_transfer";
 
 /** Only these transitions are legal. `paid` is reachable only server-side. */
 const T: Record<PaymentStatus, PaymentStatus[]> = {
@@ -21,7 +21,7 @@ export interface PaymentSession {
   provider: ProviderId; sessionId: string; redirectUrl: string | null;
   amountFils: number; currency: "JOD"; status: PaymentStatus;
 }
-export interface WebhookResult { eventId: string; provider: ProviderId; sessionId: string; paymentStatus: PaymentStatus; }
+export interface WebhookResult { eventId: string; provider: ProviderId; sessionId: string; paymentStatus: PaymentStatus; amountFils: number; currency: "JOD"; providerReference?: string; }
 
 /** Every provider implements this. The UI never imports a provider directly. */
 export interface PaymentProvider {

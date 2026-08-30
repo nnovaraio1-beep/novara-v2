@@ -11,7 +11,12 @@ export async function updateOrderStatus(id: string, csrf: string, fd: FormData):
     const db = requireDb();
     const parsed = parse(statusSchema, { status: fd.get("status"), internalNote: fd.get("internalNote") ?? undefined });
     const before = await db.order.findUnique({ where: { id } });
-    await db.order.update({ where: { id }, data: { status: parsed.status, internalNote: parsed.internalNote ?? before?.internalNote } });
+    const payment = parsed.status === "confirmed" ? await db.payment.findFirst({ where: { orderId: id }, orderBy: { createdAt: "desc" } }) : null;
+    if (payment && payment.provider !== "bank_transfer" && payment.status !== "paid") throw new Error("Online orders can only be confirmed by a verified provider webhook.");
+    await db.$transaction(async (tx) => {
+      await tx.order.update({ where: { id }, data: { status: parsed.status, internalNote: parsed.internalNote ?? before?.internalNote } });
+      if (payment?.provider === "bank_transfer" && parsed.status === "confirmed" && payment.status === "pending") await tx.payment.update({ where: { id: payment.id }, data: { status: "paid" } });
+    });
     revalidatePath(`/admin/orders/${id}`); revalidatePath("/admin/orders");
   });
 }

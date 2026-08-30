@@ -6,6 +6,7 @@ const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 const nextConfig: NextConfig = {
   images: { formats: ["image/avif", "image/webp"] },
   reactStrictMode: true,
+  poweredByHeader: false,
 };
 
 export default withNextIntl(nextConfig);

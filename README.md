@@ -64,7 +64,7 @@ API: `checkout/session`, `payments/webhook/[provider]`, `orders/[number]`,
 | Online card payment | A provider SDK + keys, `PAYMENT_PROVIDER` set | Bank transfer + quotation shown |
 | Accounts / login | `AUTH_SECRET` + `DATABASE_URL` + provider | Auth API returns 501; guest checkout works |
 | Order persistence | A database behind the repository interface | In-memory dev harness |
-| Contact form delivery | `SMTP_URL` | Form is a demo |
+| Contact form delivery | `SMTP_URL`, `MAIL_FROM`, `CONTACT_TO_EMAIL` | Stores in PostgreSQL when available and sends through configured SMTP |
 | Tax on checkout | `TAX_RATE` (decimal) | 0 |
 
 ## Environment variables
@@ -85,5 +85,5 @@ code and messages; none were invented.
 - Portfolio items are **concept projects**, labelled bilingually — not client work.
 - No fabricated statistics, testimonials, client logos, ratings, or awards.
 - Blog posts are starter editorial content the owner can replace.
-- Privacy / Terms are templates and must be lawyer-reviewed before launch.
+- Privacy, terms, refund/cancellation and delivery policies are published in Arabic and English; owner/legal review remains recommended.
 - Advertising-spend disclaimer is present in Arabic and English.

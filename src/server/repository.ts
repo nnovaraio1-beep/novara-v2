@@ -1,11 +1,11 @@
+import type { Prisma } from "@prisma/client";
 import type { OrderStatus, PaymentStatus, ProviderId } from "@/lib/payments/types";
 import type { OrderRecord, PaymentRecord } from "./models";
+import type { ResolvedLine, ResolvedOrder } from "@/lib/commerce/catalog";
+import { requireDb } from "./db";
+import { ADDONS } from "@/data/addons";
+const addonPrice = new Map(ADDONS.map((addon) => [addon.slug, addon.price * 1000]));
 
-/**
- * Persistence seam. ⚠️ In-memory dev harness — state does NOT survive a
- * serverless cold start. Replace `memoryRepository` with a real DB implementation
- * of this interface and nothing above this line changes.
- */
 export interface Repository {
   createOrder(o: Omit<OrderRecord, "id" | "createdAt">): Promise<OrderRecord>;
   getOrder(id: string): Promise<OrderRecord | null>;
@@ -14,26 +14,44 @@ export interface Repository {
   createPayment(p: Omit<PaymentRecord, "id">): Promise<PaymentRecord>;
   getPaymentBySession(provider: ProviderId, sessionId: string): Promise<PaymentRecord | null>;
   setPaymentStatus(id: string, status: PaymentStatus): Promise<void>;
-  recordEventOnce(provider: ProviderId, eventId: string): Promise<boolean>;
   audit(e: { actor: string; action: string; entity: string; entityId: string; metadata?: unknown }): Promise<void>;
 }
 
-const rid = (p: string) => `${p}_${Math.random().toString(36).slice(2, 10)}${Date.now().toString(36)}`;
-const orders = new Map<string, OrderRecord>();
-const payments = new Map<string, PaymentRecord>();
-const seen = new Set<string>();
+type OrderWithItems = Prisma.OrderGetPayload<{ include: { items: true } }>;
+function fromRow(row: OrderWithItems | null): OrderRecord | null {
+  if (!row) return null;
+  const lines: ResolvedLine[] = row.items.map((item) => {
+    const addons = Array.isArray(item.addons) ? item.addons as { slug: string; priceFils: number }[] : [];
+    return { slug: item.productSlug, kind: item.kind as "package" | "service", name: item.productName, unitFils: item.unitFils, billing: item.billingType as ResolvedLine["billing"], quantity: item.quantity, addonSlugs: addons.map((a) => a.slug), addonsFils: addons.reduce((sum, a) => sum + a.priceFils, 0), lineFils: item.lineFils };
+  });
+  const resolved: ResolvedOrder = { lines, subtotalFils: row.subtotalFils, discountFils: row.discountFils, taxFils: row.taxFils, totalFils: row.totalFils, currency: "JOD", requiresQuote: lines.some((line) => line.billing === "custom"), hasSubscription: lines.some((line) => line.billing === "monthly") };
+  return { id: row.id, orderNumber: row.orderNumber, status: row.status as OrderStatus, email: row.email, resolved, createdAt: row.createdAt.toISOString() };
+}
 
-export const memoryRepository: Repository = {
-  async createOrder(o) { const r = { ...o, id: rid("ord"), createdAt: new Date().toISOString() }; orders.set(r.id, r); return r; },
-  async getOrder(i) { return orders.get(i) ?? null; },
-  async getOrderByNumber(n) { return [...orders.values()].find((o) => o.orderNumber === n) ?? null; },
-  async setOrderStatus(i, s) { const o = orders.get(i); if (o) o.status = s; },
-  async createPayment(p) { const r = { ...p, id: rid("pay") }; payments.set(r.id, r); return r; },
-  async getPaymentBySession(pr, sid) { return [...payments.values()].find((p) => p.provider === pr && p.sessionId === sid) ?? null; },
-  async setPaymentStatus(i, s) { const p = payments.get(i); if (p) p.status = s; },
-  async recordEventOnce(pr, eid) { const k = `${pr}:${eid}`; if (seen.has(k)) return false; seen.add(k); return true; },
-  async audit(e) { console.info("[audit]", e.action, e.entity, e.entityId); },
+export const repository: Repository = {
+  async createOrder(order) {
+    const created = await requireDb().order.create({ data: {
+      orderNumber: order.orderNumber, status: order.status, email: order.email,
+      subtotalFils: order.resolved.subtotalFils, discountFils: order.resolved.discountFils,
+      taxFils: order.resolved.taxFils, totalFils: order.resolved.totalFils, currency: order.resolved.currency,
+      items: { create: order.resolved.lines.map((line) => ({
+        productSlug: line.slug, productName: line.name, kind: line.kind, unitFils: line.unitFils ?? 0,
+        billingType: line.billing, quantity: line.quantity,
+        addons: line.addonSlugs.map((slug) => ({ slug, priceFils: addonPrice.get(slug) ?? 0 })), lineFils: line.lineFils,
+      })) },
+    }, include: { items: true } });
+    return fromRow(created)!;
+  },
+  async getOrder(id) { return fromRow(await requireDb().order.findUnique({ where: { id }, include: { items: true } })); },
+  async getOrderByNumber(orderNumber) { return fromRow(await requireDb().order.findUnique({ where: { orderNumber }, include: { items: true } })); },
+  async setOrderStatus(id, status) { await requireDb().order.update({ where: { id }, data: { status } }); },
+  async createPayment(payment) { const row = await requireDb().payment.create({ data: payment }); return { ...row, provider: row.provider as ProviderId, status: row.status as PaymentStatus }; },
+  async getPaymentBySession(provider, sessionId) { const row = await requireDb().payment.findUnique({ where: { provider_sessionId: { provider, sessionId } } }); return row ? { ...row, provider: row.provider as ProviderId, status: row.status as PaymentStatus } : null; },
+  async setPaymentStatus(id, status) { await requireDb().payment.update({ where: { id }, data: { status } }); },
+  async audit(event) {
+    const [kind, email] = event.actor.split(":", 2);
+    await requireDb().auditLog.create({ data: { actorEmail: kind === "guest" ? email : undefined, action: event.action, entityType: event.entity, entityId: event.entityId, after: event.metadata === undefined ? undefined : JSON.parse(JSON.stringify(event.metadata)) } });
+  },
 };
 
-export const repository: Repository = memoryRepository;
-export const newOrderNumber = () => `ORD-${new Date().getFullYear()}-${Math.random().toString(16).slice(2, 8).toUpperCase()}`;
+export const newOrderNumber = () => `ORD-${new Date().getFullYear()}-${crypto.randomUUID().replaceAll("-", "").slice(0, 6).toUpperCase()}`;

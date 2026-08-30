@@ -3,6 +3,7 @@ import type { Locale } from "@/i18n/routing";
 import { pageMetadata } from "@/lib/seo";
 import { Mail, MessageCircle, MapPin, Clock } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
+import { ContactForm } from "@/components/contact-form";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: Locale }> }) {
   const { locale } = await params;
@@ -13,19 +14,11 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("contact");
-  const f = (k: string) => t(`form.${k}`);
   return (
     <>
       <PageHeader eyebrow={t("eyebrow")} title={t("title")} subtitle={t("subtitle")} />
       <section className="container-x section-sm grid gap-12 lg:grid-cols-[1fr_360px]">
-        <div className="card p-8 lg:p-10">
-          <div className="grid gap-5 sm:grid-cols-2">
-            {["name", "email", "company", "phone"].map((k) => (<label key={k} className="block"><span className="t-label text-[--color-text-dim]">{f(k)}</span><input className="mt-2 h-12 w-full rounded-[--radius-sm] border border-[--border-hairline] bg-[--color-surface] px-4 outline-none focus:border-[--color-brand]/60" /></label>))}
-          </div>
-          <label className="mt-5 block"><span className="t-label text-[--color-text-dim]">{f("message")}</span><textarea rows={5} className="mt-2 w-full rounded-[--radius-sm] border border-[--border-hairline] bg-[--color-surface] p-4 outline-none focus:border-[--color-brand]/60" /></label>
-          <button className="btn btn-primary btn-lg mt-6">{f("submit")}</button>
-          <p className="mt-4 text-[13px] text-[--color-text-dim]">{t("formNote")}</p>
-        </div>
+        <ContactForm />
         <aside className="space-y-4">
           {([
             [Mail, t("emailLabel"), "hello@nnovara.io", "mailto:hello@nnovara.io"],

@@ -20,7 +20,7 @@ export async function AdminPage({ permission, children }: { permission?: Permiss
   const permitted = !permission || admin.role === "super_admin" || admin.permissions.includes(permission);
 
   return (
-    <AdminShell adminName={admin.name} adminRole={admin.role} permissions={admin.permissions} onLogout={logoutAction}>
+    <AdminShell adminName={admin.name} adminRole={admin.role} permissions={admin.permissions} onLogout={logoutAction.bind(null, admin.csrfToken)}>
       {permitted ? children : (
         <div style={{ textAlign: "center", padding: "80px 24px" }}>
           <h1 style={{ fontSize: 22, fontWeight: 700, color: A.text }}>Access denied</h1>

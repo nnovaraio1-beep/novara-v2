@@ -11,7 +11,7 @@ export async function Footer() {
   const columns = [
     { heading: t("company"), links: [[t("links.about"), "/about"], [t("links.portfolio"), "/portfolio"], [t("links.careers"), "/careers"], [t("links.contact"), "/contact"]] },
     { heading: t("services"), links: [[t("links.social"), "/social-media"], [t("links.branding"), "/services/branding"], [t("links.web"), "/services/web-development"], [t("links.ecommerce"), "/services/ecommerce"], [t("links.ai"), "/services/ai-solutions"]] },
-    { heading: t("resources"), links: [[t("links.store"), "/store"], [t("links.faq"), "/faq"], [t("links.blog"), "/blog"], [t("links.privacy"), "/privacy"], [t("links.terms"), "/terms"]] },
+    { heading: t("resources"), links: [[t("links.store"), "/store"], [t("links.faq"), "/faq"], [t("links.privacy"), "/privacy"], [t("links.terms"), "/terms"], [t("links.refund"), "/refund-policy"], [t("links.delivery"), "/delivery-policy"]] },
   ];
 
   return (
@@ -38,7 +38,7 @@ export async function Footer() {
             <h2 className="t-label text-[--color-text-dim]">{t("contactCol")}</h2>
             <ul className="mt-6 space-y-4">
               <li className="flex items-start gap-3"><Mail className="mt-0.5 size-4 shrink-0 text-[--color-brand-light]" aria-hidden /><a href="mailto:hello@nnovara.io" className="t-small text-[--color-text-muted] hover:text-[--color-text]">hello@nnovara.io</a></li>
-              <li className="flex items-start gap-3"><MessageCircle className="mt-0.5 size-4 shrink-0 text-[--color-brand-light]" aria-hidden /><a href="https://wa.me/962790000000" className="t-small text-[--color-text-muted] hover:text-[--color-text]">{t("whatsapp")}</a></li>
+              <li className="flex items-start gap-3"><MessageCircle className="mt-0.5 size-4 shrink-0 text-[--color-brand-light]" aria-hidden /><a href="https://wa.me/962796958487" rel="noopener noreferrer" className="t-small text-[--color-text-muted] hover:text-[--color-text]">{t("whatsapp")}</a></li>
               <li className="flex items-start gap-3"><MapPin className="mt-0.5 size-4 shrink-0 text-[--color-brand-light]" aria-hidden /><address className="t-small not-italic text-[--color-text-muted]">{t("address")}</address></li>
             </ul>
           </div>

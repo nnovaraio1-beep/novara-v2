@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { repository } from "@/server/repository";
 import { rateLimit, clientKey } from "@/lib/rate-limit";
+import { validOrderAccess } from "@/lib/security/order-access";
 export const runtime = "nodejs";
 
 /** Order status for the confirmation page. `paid` is never inferred here — set only by a verified webhook.
@@ -8,6 +9,7 @@ export const runtime = "nodejs";
 export async function GET(req: Request, { params }: { params: Promise<{ number: string }> }) {
   const { number } = await params;
   if (!rateLimit(`order:${clientKey(req)}`, 30, 60_000).ok) return NextResponse.json({ error: "rate_limited" }, { status: 429 });
+  if (!/^ORD-\d{4}-[A-F0-9]{6}$/.test(number) || !validOrderAccess(number, new URL(req.url).searchParams.get("access"))) return NextResponse.json({ error: "not_found" }, { status: 404 });
   const order = await repository.getOrderByNumber(number);
   if (!order) return NextResponse.json({ error: "not_found" }, { status: 404 });
   return NextResponse.json({

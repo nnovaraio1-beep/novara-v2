@@ -29,7 +29,7 @@ export function CheckoutFlow({ onlineAvailable, manualAvailable }: { onlineAvail
   const [step, setStep] = useState<Step>(0);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [form, setForm] = useState({ fullName: "", email: "", phone: "", company: "", country: "Jordan", city: "", address: "", taxNumber: "", coupon: "", notes: "", acceptTerms: false, acceptPrivacy: false });
+  const [form, setForm] = useState({ fullName: "", email: "", phone: "", company: "", country: "Jordan", city: "", address: "", taxNumber: "", coupon: "", notes: "", acceptPolicies: false });
 
   const addonPrice = new Map(ADDONS.map((a) => [a.slug, a.price]));
   const rows = cart.lines.map((line) => ({ line, item: findItem(line.slug) })).filter((r): r is { line: typeof r.line; item: NonNullable<ReturnType<typeof findItem>> } => Boolean(r.item));
@@ -54,13 +54,13 @@ export function CheckoutFlow({ onlineAvailable, manualAvailable }: { onlineAvail
     setBusy(true); setError(null);
     try {
       const res = await fetch("/api/checkout/session", { method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, acceptTerms: String(form.acceptTerms), acceptPrivacy: String(form.acceptPrivacy), paymentMethod: method,
+        body: JSON.stringify({ ...form, locale, acceptTerms: String(form.acceptPolicies), acceptPrivacy: String(form.acceptPolicies), acceptRefund: String(form.acceptPolicies), acceptDelivery: String(form.acceptPolicies), policyVersion: "2026-08-30", paymentMethod: method,
           lines: cart.lines.map((l) => ({ slug: l.slug, kind: findItem(l.slug)?.kind ?? "package", quantity: l.quantity, addons: l.addons })) }) });
       const data = await res.json();
       if (!res.ok) { setError(data.error === "online_payment_unavailable" ? t("errors.unavailable") : t("errors.generic")); setBusy(false); return; }
       cart.clear();
       if (data.mode === "online" && data.redirectUrl) { window.location.href = data.redirectUrl; return; }
-      router.push(`/order/success?order=${encodeURIComponent(data.orderNumber)}&mode=${data.mode}`);
+      router.push(`/order/success?order=${encodeURIComponent(data.orderNumber)}&access=${encodeURIComponent(data.accessToken)}&mode=${data.mode}`);
     } catch { setError(t("errors.network")); setBusy(false); }
   }
 
@@ -97,16 +97,13 @@ export function CheckoutFlow({ onlineAvailable, manualAvailable }: { onlineAvail
                     <input type="radio" name="method" checked={method === m} onChange={() => setMethod(m)} className="mt-1 accent-[--color-brand]" /><Icon className="mt-0.5 size-4 shrink-0 text-[--color-brand-light]" aria-hidden />
                     <span><span className="block font-semibold">{t(`methods.${m}.title`)}</span><span className="mt-1 block text-[14px] leading-relaxed text-[--color-text-muted]">{t(`methods.${m}.body`)}</span></span></label>); })}
               </fieldset>
-              <div className="mt-7 space-y-3">
-                <label className="flex items-start gap-3 text-[14px] text-[--color-text-muted]"><input type="checkbox" checked={form.acceptTerms} onChange={(e) => setForm((f) => ({ ...f, acceptTerms: e.target.checked }))} className="mt-1 size-4 accent-[--color-brand]" />{t("acceptTerms")}</label>
-                <label className="flex items-start gap-3 text-[14px] text-[--color-text-muted]"><input type="checkbox" checked={form.acceptPrivacy} onChange={(e) => setForm((f) => ({ ...f, acceptPrivacy: e.target.checked }))} className="mt-1 size-4 accent-[--color-brand]" />{t("acceptPrivacy")}</label>
-              </div>
+              <div className="mt-7"><label className="flex items-start gap-3 text-[14px] leading-relaxed text-[--color-text-muted]"><input type="checkbox" required checked={form.acceptPolicies} onChange={(e) => setForm((f) => ({ ...f, acceptPolicies: e.target.checked }))} className="mt-1 size-4 shrink-0 accent-[--color-brand]" /><span>{t("consentIntro")} <Link className="underline hover:text-[--color-text]" href="/terms">{t("policyLinks.terms")}</Link>, <Link className="underline hover:text-[--color-text]" href="/privacy">{t("policyLinks.privacy")}</Link>, <Link className="underline hover:text-[--color-text]" href="/refund-policy">{t("policyLinks.refund")}</Link> {t("policyLinks.and")} <Link className="underline hover:text-[--color-text]" href="/delivery-policy">{t("policyLinks.delivery")}</Link>.</span></label></div>
               {error && <p className="mt-6 rounded-[--radius-sm] border border-red-500/40 bg-red-500/10 p-4 text-[14px] text-red-200">{error}</p>}
             </div>}
             <div className="mt-8 flex items-center justify-between gap-4 border-t border-[--border-hairline] pt-6">
               <button onClick={() => setStep((s) => Math.max(0, s - 1) as Step)} disabled={step === 0} className="btn btn-ghost btn-md disabled:opacity-40">{t("back")}</button>
               {step < 4 ? <button onClick={() => setStep((s) => (s + 1) as Step)} disabled={!canAdvance} className="btn btn-primary btn-md disabled:opacity-40">{t("next")}</button>
-                : <button onClick={submit} disabled={busy || !form.acceptTerms || !form.acceptPrivacy} className="btn btn-primary btn-lg disabled:opacity-40">{busy && <Loader2 className="size-4 animate-spin" aria-hidden />}{method === "quotation" ? t("submitQuote") : t("placeOrder")}</button>}
+                : <button onClick={submit} disabled={busy || !form.acceptPolicies} className="btn btn-primary btn-lg disabled:opacity-40">{busy && <Loader2 className="size-4 animate-spin" aria-hidden />}{method === "quotation" ? t("submitQuote") : t("placeOrder")}</button>}
             </div>
           </div>
         </div>

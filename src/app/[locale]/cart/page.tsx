@@ -7,5 +7,5 @@ export default async function CartPage({ params }: { params: Promise<{ locale: L
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("cart");
-  return (<><PageHeader eyebrow={t("eyebrow")} title={t("title")} subtitle={t("subtitle")} /><section className="container-x pb-28 pt-4">{/* Checkout note: guest-first. Payment is a placeholder until a provider is configured. */}<CartView /></section></>);
+  return (<><PageHeader eyebrow={t("eyebrow")} title={t("title")} subtitle={t("subtitle")} /><section className="container-x pb-28 pt-4"><CartView /></section></>);
 }

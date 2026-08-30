@@ -8,7 +8,7 @@ import { projectSlugs } from "@/data/portfolio";
 const BASE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://nnovara.io";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const staticPaths = ["", "services", "store", "social-media", "portfolio", "about", "contact", "blog", "faq", "privacy", "terms", "cart"];
+  const staticPaths = ["", "services", "store", "social-media", "portfolio", "about", "contact", "blog", "faq", "privacy", "terms", "refund-policy", "delivery-policy"];
   const dynamic = [
     ...serviceSlugs().map((s) => `services/${s}`),
     ...packageSlugs().map((s) => `store/${s}`),

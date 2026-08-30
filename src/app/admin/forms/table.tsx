@@ -7,7 +7,7 @@ import { markRead, markReplied, markSpam, softDeleteSubmission } from "./actions
 
 interface Item { id: string; type: string; data: Record<string, unknown>; isRead: boolean; isReplied: boolean; isSpam: boolean; createdAt: string }
 export function FormsTable({ items, total, page, perPage, type, filter }: { items: Item[]; total: number; page: number; perPage: number; type: string; filter: string }) {
-  const router = useRouter(); const [pending, start] = useTransition(); const { toast, showToast, clearToast } = useToast(); const [openId, setOpenId] = useState<string | null>(null);
+  const router = useRouter(); const [, start] = useTransition(); const { toast, showToast, clearToast } = useToast(); const [openId, setOpenId] = useState<string | null>(null);
   const nav = (patch: Record<string, string>) => { const p = new URLSearchParams(); Object.entries({ type, filter, ...patch }).forEach(([k, val]) => { if (val) p.set(k, val); }); router.push(`/admin/forms?${p}`); };
   const run = (fn: () => Promise<{ ok: boolean; error?: string }>, msg: string) => start(async () => { const r = await fn(); if (r.ok) { showToast(msg); router.refresh(); } else showToast(r.error ?? "Failed", "danger"); });
   return (
