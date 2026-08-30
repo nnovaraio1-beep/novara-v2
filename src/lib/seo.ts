@@ -30,3 +30,8 @@ export function itemMetadata(locale: Locale, path: string, title: string, descri
     twitter: { card: "summary_large_image", title, description, images: image ? [`${BASE}${image}`] : undefined },
   };
 }
+
+/** Transactional and authentication pages are useful to visitors, not search results. */
+export const NOINDEX_METADATA: Metadata = {
+  robots: { index: false, follow: false, nocache: true },
+};

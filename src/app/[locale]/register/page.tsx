@@ -3,6 +3,9 @@ import type { Locale } from "@/i18n/routing";
 import { Link } from "@/i18n/navigation";
 import { AuthShell } from "@/components/auth-shell";
 import { RegisterForm } from "@/components/register-form";
+import { NOINDEX_METADATA } from "@/lib/seo";
+
+export const metadata = NOINDEX_METADATA;
 
 export default async function RegisterPage({ params }: { params: Promise<{ locale: Locale }> }) {
   const { locale } = await params; setRequestLocale(locale);
