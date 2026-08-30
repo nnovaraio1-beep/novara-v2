@@ -34,7 +34,7 @@ export default async function AdminDashboard() {
   ];
 
   return (
-    <AdminShell adminName={admin.name} adminRole={admin.role} permissions={admin.permissions} onLogout={logoutAction}>
+    <AdminShell adminName={admin.name} adminRole={admin.role} permissions={admin.permissions} onLogout={logoutAction.bind(null, admin.csrfToken)}>
       <h1 style={{ fontSize: 24, fontWeight: 700, color: A.text, margin: 0 }}>Dashboard</h1>
       <p style={{ color: A.muted, marginTop: 6, fontSize: 14 }}>Welcome back, {admin.name}.</p>
 

@@ -12,12 +12,12 @@ export interface Promotion {
 }
 
 export const PROMOTION: Promotion = {
-  active: true,
-  percentOff: 25,
-  endsAt: "2026-08-12",
+  active: false,
+  percentOff: 0,
+  endsAt: "",
   appliesTo: ["service", "package"],
-  labelEn: "25% OFF",
-  labelAr: "خصم ٢٥٪",
+  labelEn: "",
+  labelAr: "",
 };
 
 /** هل الحملة شغّالة الآن؟ */

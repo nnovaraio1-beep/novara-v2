@@ -241,7 +241,9 @@
     "registerTitle": "Create an account",
     "registerSubtitle": "Optional. You can order without one.",
     "forgotTitle": "Reset your password",
-    "forgotSubtitle": "We'll email you a reset link.",
+    "forgotSubtitle": "Secure account recovery assistance.",
+    "resetSupport": "Automated password reset is not currently enabled. Contact NOVARA support from your account email and we will help you recover access after verification.",
+    "resetSafety": "For your protection, never send your password or payment-card details by email.",
     "fullName": "Full name",
     "remember": "Remember me",
     "forgot": "Forgot your password?",
@@ -274,7 +276,10 @@
       "message": "How can we help?",
       "submit": "Send message"
     },
-    "formNote": "This is a demo form. Connect a form handler or email service before going live.",
+    "formNote": "We use these details only to respond to your enquiry.",
+    "sent": "Message sent",
+    "sentNote": "Thank you. We received your message and will reply as soon as possible.",
+    "sendError": "We could not send your message right now. Please email hello@nnovara.io or try again later.",
     "emailLabel": "Email",
     "whatsappLabel": "WhatsApp",
     "officeLabel": "Office",
@@ -334,11 +339,11 @@
   "privacy": {
     "eyebrow": "Legal",
     "title": "Privacy Policy",
-    "subtitle": "How we handle the information you share with us. This is a template and should be reviewed by a lawyer before launch.",
+    "subtitle": "How NOVARA handles personal information when you use our website and services.",
     "s": {
       "a": {
         "h": "What we collect",
-        "p": "Contact details you submit through forms, and standard analytics about how the site is used. This template describes intent; wire it to your real data practices before launch."
+        "p": "Contact, account, order and project information you choose to provide, plus limited technical data needed for security and operation."
       },
       "b": {
         "h": "How we use it",
@@ -353,12 +358,12 @@
         "p": "For any privacy question, email hello@nnovara.io and we'll respond within a reasonable period."
       }
     },
-    "updated": "This is a template policy. Replace with reviewed legal text before going live."
+    "updated": "Effective date and version: 2026-08-30"
   },
   "terms": {
     "eyebrow": "Legal",
     "title": "Terms of Service",
-    "subtitle": "The terms under which we provide services. This is a template and should be reviewed by a lawyer before launch.",
+    "subtitle": "The terms under which NOVARA provides digital services.",
     "s": {
       "a": {
         "h": "Scope of work",
@@ -377,7 +382,7 @@
         "p": "Monthly packages can be cancelled at the end of any billing month with notice before the next cycle."
       }
     },
-    "updated": "This is a template. Replace with reviewed legal text before going live."
+    "updated": "Effective date and version: 2026-08-30"
   },
   "footer": {
     "company": "Company",
@@ -399,6 +404,8 @@
       "faq": "FAQ",
       "privacy": "Privacy",
       "terms": "Terms",
+      "refund": "Refunds & cancellations",
+      "delivery": "Service delivery",
       "blog": "Blog"
     },
     "whatsapp": "Message us on WhatsApp",
@@ -452,6 +459,8 @@
     "noGatewayNotice": "Online card payment is not enabled on this site yet. You can pay by bank transfer or request a written quotation, and we'll take it from there.",
     "acceptTerms": "I accept the terms of service",
     "acceptPrivacy": "I accept the privacy policy",
+    "consentIntro": "I have read and agree to the",
+    "policyLinks": { "terms": "Terms & Conditions", "privacy": "Privacy Policy", "refund": "Refund & Cancellation Policy", "and": "and", "delivery": "Service Delivery / Fulfillment Policy" },
     "back": "Back",
     "next": "Continue",
     "placeOrder": "Place order",

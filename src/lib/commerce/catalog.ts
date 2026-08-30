@@ -30,7 +30,8 @@ export interface ResolvedOrder {
   currency: "JOD"; requiresQuote: boolean; hasSubscription: boolean;
 }
 
-const TAX_RATE = Number(process.env.TAX_RATE ?? "0");
+const parsedTaxRate = Number(process.env.TAX_RATE ?? "0");
+const TAX_RATE = Number.isFinite(parsedTaxRate) && parsedTaxRate >= 0 && parsedTaxRate <= 1 ? parsedTaxRate : 0;
 
 const COUPONS: Record<string, { percent?: number; amountFils?: number }> = {
   // WELCOME10: { percent: 10 },  // validated server-side only
@@ -53,7 +54,7 @@ export function resolveOrder(rawLines: RawLine[], coupon?: string): ResolvedOrde
 
     // Monthly subscriptions are quantity-1; silently multiplying would misinvoice.
     const quantity = item.billingType === "monthly" ? 1 : Math.min(Math.max(raw.quantity ?? 1, 1), 20);
-    const addonSlugs = (raw.addons ?? []).filter((s) => ADD.has(s));
+    const addonSlugs = [...new Set(raw.addons ?? [])].filter((s) => ADD.has(s));
     const addonsFils = addonSlugs.reduce((s, k) => s + (ADD.get(k)!.price * 1000), 0);
     const unitFils = item.price === null ? null : item.price * 1000;
     const lineFils = unitFils === null ? 0 : unitFils * quantity + addonsFils;

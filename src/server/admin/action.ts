@@ -35,7 +35,7 @@ export async function runAction<T>(opts: RunOptions, fn: (actor: Awaited<ReturnT
     if (e instanceof UnauthorizedError) return { ok: false, error: "Your session has expired. Please sign in again." };
     if (e instanceof ForbiddenError) return { ok: false, error: `You don't have permission for this action (${e.permission}).` };
     if (e instanceof AdminNotConfiguredError) return { ok: false, error: "The admin database is not configured." };
-    console.error("[admin action]", e);
+    console.error("[admin action] failed", e instanceof Error ? e.name : "unknown");
     return { ok: false, error: "Something went wrong. No changes were saved." };
   }
 }

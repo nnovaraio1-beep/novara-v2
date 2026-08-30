@@ -29,5 +29,5 @@ export async function audit(input: AuditInput): Promise<void> {
         after: input.after !== undefined ? (scrub(JSON.parse(JSON.stringify(input.after))) as object) : undefined,
       },
     });
-  } catch (e) { console.error("[audit] failed:", (e as Error).message); }
+  } catch { console.error("[audit] write failed"); }
 }
