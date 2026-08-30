@@ -30,6 +30,9 @@ export default function middleware(req: NextRequest) {
     "object-src 'none'", "base-uri 'self'", "form-action 'self'", "frame-ancestors 'none'",
     production ? "upgrade-insecure-requests" : "",
   ].filter(Boolean).join("; ");
+  // Next.js 15 extracts the framework-script nonce from the request CSP during
+  // server rendering. Keep this identical to the policy sent on the response.
+  requestHeaders.set("Content-Security-Policy", csp);
 
   const secure = (response: NextResponse) => {
     response.headers.set("Content-Security-Policy", csp);

@@ -3,6 +3,10 @@ import type { Metadata } from "next";
 import { Manrope, IBM_Plex_Sans_Arabic } from "next/font/google";
 import "./globals.css";
 
+// CSP nonces are generated per request. Dynamic rendering lets Next.js read the
+// request policy and attach its nonce to every framework/client script.
+export const dynamic = "force-dynamic";
+
 const manrope = Manrope({ subsets: ["latin"], variable: "--font-manrope", display: "swap" });
 const arabic = IBM_Plex_Sans_Arabic({ subsets: ["arabic"], weight: ["400", "500", "600", "700"], variable: "--font-arabic", display: "swap" });
 

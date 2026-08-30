@@ -2,19 +2,19 @@ import type { ReactNode } from "react";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
-import { routing, isLocale } from "@/i18n/routing";
+import { headers } from "next/headers";
+import { isLocale } from "@/i18n/routing";
 import { CartProvider } from "@/lib/cart";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { HtmlLang } from "@/components/html-lang";
 
-export function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }));
-}
-
 export default async function LocaleLayout({
   children, params,
 }: { children: ReactNode; params: Promise<{ locale: string }> }) {
+  // Opt this tree into request-time rendering so Next.js can read the
+  // nonce-bearing CSP inserted by middleware.
+  await headers();
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   setRequestLocale(locale);
