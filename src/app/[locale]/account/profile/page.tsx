@@ -1,12 +1,14 @@
 import { redirect } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import type { Locale } from "@/i18n/routing";
+import { NOINDEX_METADATA } from "@/lib/seo";
 import { PageHeader } from "@/components/page-header";
 import { getCurrentCustomer } from "@/server/customer/auth";
 import { databaseConfigured } from "@/server/db";
 import { ProfileForm } from "@/components/profile-form";
 
 export const dynamic = "force-dynamic";
+export const metadata = NOINDEX_METADATA;
 
 export default async function ProfilePage({ params }: { params: Promise<{ locale: Locale }> }) {
   const { locale } = await params; setRequestLocale(locale);

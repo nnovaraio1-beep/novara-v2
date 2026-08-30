@@ -7,8 +7,10 @@ import { User, Package, FileText, Bookmark, Receipt, Activity, LifeBuoy } from "
 import { getCurrentCustomer } from "@/server/customer/auth";
 import { databaseConfigured } from "@/server/db";
 import { LogoutButton } from "@/components/logout-button";
+import { NOINDEX_METADATA } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
+export const metadata = NOINDEX_METADATA;
 
 const PANELS = [{ key: "profile", Icon: User, href: "/account/profile" }, { key: "orders", Icon: Package, href: null }, { key: "quotations", Icon: FileText, href: null }, { key: "saved", Icon: Bookmark, href: null }, { key: "invoices", Icon: Receipt, href: null }, { key: "projects", Icon: Activity, href: null }, { key: "support", Icon: LifeBuoy, href: "/contact" }] as const;
 

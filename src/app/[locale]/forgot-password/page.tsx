@@ -2,6 +2,9 @@ import { setRequestLocale, getTranslations } from "next-intl/server";
 import type { Locale } from "@/i18n/routing";
 import { Link } from "@/i18n/navigation";
 import { AuthShell } from "@/components/auth-shell";
+import { NOINDEX_METADATA } from "@/lib/seo";
+
+export const metadata = NOINDEX_METADATA;
 
 export default async function ForgotPasswordPage({ params }: { params: Promise<{ locale: Locale }> }) {
   const { locale } = await params; setRequestLocale(locale);

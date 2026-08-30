@@ -1,7 +1,10 @@
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import type { Locale } from "@/i18n/routing";
+import { NOINDEX_METADATA } from "@/lib/seo";
 import { Link } from "@/i18n/navigation";
 import { XCircle } from "lucide-react";
+
+export const metadata = NOINDEX_METADATA;
 
 export default async function OrderFailedPage({ params }: { params: Promise<{ locale: Locale }> }) {
   const { locale } = await params; setRequestLocale(locale);

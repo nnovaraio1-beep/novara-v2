@@ -1,6 +1,9 @@
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import type { Locale } from "@/i18n/routing";
 import { OrderStatusView } from "@/components/order-status";
+import { NOINDEX_METADATA } from "@/lib/seo";
+
+export const metadata = NOINDEX_METADATA;
 
 export default async function OrderSuccessPage({ params, searchParams }: { params: Promise<{ locale: Locale }>; searchParams: Promise<{ order?: string; access?: string; mode?: string }> }) {
   const { locale } = await params; const { order, access, mode } = await searchParams;
