@@ -25,10 +25,10 @@ jobs:
       MAIL_FROM: hello@nnovara.io
       CONTACT_TO_EMAIL: hello@nnovara.io
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
-          node-version: 22
+          node-version: 24
           cache: npm
       - run: npm ci
       - run: npm run lint
