@@ -52,7 +52,7 @@ export async function POST(req: Request) {
   if (!mustQuote && body.paymentMethod === "online" && !onlinePaymentAvailable()) return NextResponse.json({ error: "online_payment_unavailable" }, { status: 503 });
   const configuredProvider = body.paymentMethod === "online" ? getProvider() : null;
   const onlineBilling = body.paymentMethod === "online" && configuredProvider?.id === "hyperpay";
-  const names = body.fullName.trim().split(/\\s+/);
+  const names = body.fullName.trim().split(/\s+/);
   if (onlineBilling && (
     names.length < 2 ||
     !body.address?.trim() || !body.billingState?.trim() ||
