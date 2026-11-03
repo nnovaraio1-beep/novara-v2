@@ -1,4 +1,4 @@
-import type { PaymentProvider } from "../types";
+import type { HyperPayBillingDetails, PaymentProvider } from "../types";
 
 // Deliberately not configurable: this implementation cannot contact live hosts.
 export const HYPERPAY_ORIGIN = "https://eu-test.oppwa.com";
@@ -7,7 +7,10 @@ export function hyperpayConfigured() {
 }
 export function amountJod(fils: number) {
   if (!Number.isSafeInteger(fils) || fils <= 0) throw new Error("Invalid amount");
-  return `${Math.floor(fils / 1000)}.${String(fils % 1000).padStart(3, "0")}`;
+  // Merchant test instructions and OPP API accept two decimal places.
+  // Never silently round away fils: reject totals that cannot be represented.
+  if (fils % 10 !== 0) throw new Error("JOD amount must be a whole hundredth");
+  return `${Math.floor(fils / 1000)}.${String((fils % 1000) / 10).padStart(2, "0")}`;
 }
 export async function hyperpayRequest(path: string, body?: URLSearchParams) {
   if (!hyperpayConfigured()) throw new Error("HyperPay test configuration required");
@@ -30,18 +33,35 @@ export function verifiedDebit(data: Record<string, unknown>, expected: { orderId
   const paid = ["000.000.000", "000.100.110", "000.100.111", "000.100.112"].includes(result?.code ?? "");
   return paid && typeof data.id === "string" && /^[A-Za-z0-9.-]{1,200}$/.test(data.id)
     && data.merchantTransactionId === expected.orderId && data.currency === expected.currency
-    && typeof data.amount === "string" && /^\d+\.\d{2,3}$/.test(data.amount)
-    && `${data.amount.split(".")[0]}.${data.amount.split(".")[1].padEnd(3, "0")}` === amountJod(expected.amountFils)
+    && typeof data.amount === "string" && /^\d+\.\d{2}$/.test(data.amount)
+    && data.amount === (expected.amountFils % 10 === 0 ? amountJod(expected.amountFils) : "")
     && data.paymentType === "DB" && ["VISA", "MASTER"].includes(String(data.paymentBrand));
+}
+
+export function validateHyperPayBilling(billing: HyperPayBillingDetails): boolean {
+  return /^[\\s\\S]{1,50}$/.test(billing.givenName) &&
+    /^[\\s\\S]{1,50}$/.test(billing.surname) &&
+    /^(?=.*\\p{L})[\\s\\S]{1,100}$/u.test(billing.street1) &&
+    /^[\\s\\S]{1,80}$/.test(billing.city) &&
+    /^[A-Za-z0-9.]{1,50}$/.test(billing.state) &&
+    /^[A-Za-z0-9]{1,16}$/.test(billing.postcode) &&
+    /^[A-Z]{2}$/.test(billing.country);
 }
 
 const unsupported = async (): Promise<never> => { throw new Error("Use bound server reconciliation; operation unsupported"); };
 export const hyperpayProvider: PaymentProvider = {
   id: "hyperpay", supportsSubscriptions: false, isOffline: false,
   async createPaymentSession(input) {
+    const billing = input.billing;
+    if (!billing || !validateHyperPayBilling(billing)) throw new Error("Valid 3DS2 billing details required");
     const data = await hyperpayRequest("/v1/checkouts", new URLSearchParams({
       amount: amountJod(input.amountFils), currency: input.currency, paymentType: "DB",
       merchantTransactionId: input.orderId, "customer.email": input.customerEmail,
+      "customer.givenName": billing.givenName, "customer.surname": billing.surname,
+      "billing.street1": billing.street1, "billing.city": billing.city,
+      "billing.state": billing.state, "billing.postcode": billing.postcode,
+      "billing.country": billing.country,
+      testMode: "EXTERNAL", "customParameters[3DS2_enrolled]": "true",
       integrity: "true",
     }));
     if (typeof data.id !== "string" || !/^[A-Za-z0-9.-]{1,200}$/.test(data.id)) throw new Error("Invalid checkout");
