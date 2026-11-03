@@ -17,6 +17,16 @@ const T: Record<PaymentStatus, PaymentStatus[]> = {
 };
 export const canTransition = (from: PaymentStatus, to: PaymentStatus) => T[from].includes(to);
 
+export interface HyperPayBillingDetails {
+  givenName: string;
+  surname: string;
+  street1: string;
+  city: string;
+  state: string;
+  postcode: string;
+  country: string; // ISO 3166-1 alpha-2
+}
+
 export interface PaymentSession {
   integrity?: string;
   provider: ProviderId; sessionId: string; redirectUrl: string | null;
@@ -29,7 +39,7 @@ export interface PaymentProvider {
   readonly id: ProviderId;
   readonly supportsSubscriptions: boolean;
   readonly isOffline: boolean;
-  createPaymentSession(i: { orderId: string; amountFils: number; currency: "JOD"; customerEmail: string; returnUrl: string; cancelUrl: string }): Promise<PaymentSession>;
+  createPaymentSession(i: { orderId: string; amountFils: number; currency: "JOD"; customerEmail: string; billing?: HyperPayBillingDetails; returnUrl: string; cancelUrl: string }): Promise<PaymentSession>;
   verifyPayment(sessionId: string): Promise<PaymentStatus>;
   cancelPayment(sessionId: string): Promise<PaymentStatus>;
   refundPayment(sessionId: string, amountFils?: number): Promise<PaymentStatus>;
