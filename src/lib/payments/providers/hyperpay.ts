@@ -39,12 +39,12 @@ export function verifiedDebit(data: Record<string, unknown>, expected: { orderId
 }
 
 export function validateHyperPayBilling(billing: HyperPayBillingDetails): boolean {
-  return /^[\\s\\S]{1,50}$/.test(billing.givenName) &&
-    /^[\\s\\S]{1,50}$/.test(billing.surname) &&
-    /^(?=.*\\p{L})[\\s\\S]{1,100}$/u.test(billing.street1) &&
-    /^[\\s\\S]{1,80}$/.test(billing.city) &&
-    /^[A-Za-z0-9.]{1,50}$/.test(billing.state) &&
-    /^[A-Za-z0-9]{1,16}$/.test(billing.postcode) &&
+  return billing.givenName.trim().length > 0 && billing.givenName.length <= 50 &&
+    billing.surname.trim().length > 0 && billing.surname.length <= 50 &&
+    billing.street1.trim().length > 0 && billing.street1.length <= 100 &&
+    billing.city.trim().length > 0 && billing.city.length <= 80 &&
+    billing.state.trim().length > 0 && billing.state.length <= 80 &&
+    /^[A-Za-z0-9 -]{1,16}$/.test(billing.postcode) &&
     /^[A-Z]{2}$/.test(billing.country);
 }
 
