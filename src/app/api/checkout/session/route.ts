@@ -69,6 +69,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "payment_session_failed" }, { status: 502 });
   }
   if (!session.redirectUrl || !session.redirectUrl.startsWith("https://")) return NextResponse.json({ error: "invalid_provider_response" }, { status: 502 });
-  await repository.createPayment({ orderId: order.id, provider: provider.id, sessionId: session.sessionId, status: "pending", amountFils: resolved.totalFils });
+  await repository.createPayment({ orderId: order.id, provider: provider.id, sessionId: session.sessionId, checkoutIntegrity: session.integrity, status: "processing", amountFils: resolved.totalFils });
   return NextResponse.json({ orderNumber: order.orderNumber, accessToken, mode: "online", provider: provider.id, redirectUrl: session.redirectUrl });
 }

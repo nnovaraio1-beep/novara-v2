@@ -34,17 +34,18 @@ export function CheckoutFlow({ onlineAvailable, manualAvailable }: { onlineAvail
 
   const addonPrice = new Map(ADDONS.map((a) => [a.slug, a.price]));
   const rows = cart.lines.map((line) => ({ line, item: findItem(line.slug) })).filter((r): r is { line: typeof r.line; item: NonNullable<ReturnType<typeof findItem>> } => Boolean(r.item));
+  const hasSubscription = rows.some((r) => r.item.billing === "monthly");
   const requiresQuote = rows.some((r) => r.item.price === null);
   const subtotal = rows.reduce((s, { line, item }) => item.price === null ? s : s + item.price * line.quantity + line.addons.reduce((a, k) => a + (addonPrice.get(k) ?? 0), 0), 0);
 
   const methods: Method[] = useMemo(() => {
     if (requiresQuote) return ["quotation"];
     const m: Method[] = [];
-    if (onlineAvailable) m.push("online");
+    if (onlineAvailable && !hasSubscription) m.push("online");
     if (manualAvailable) m.push("bank_transfer");
     m.push("quotation");
     return m;
-  }, [requiresQuote, onlineAvailable, manualAvailable]);
+  }, [requiresQuote, onlineAvailable, manualAvailable, hasSubscription]);
   const [method, setMethod] = useState<Method>(methods[0]);
 
   const steps = ["info", "review", "addons", "billing", "payment"] as const;
@@ -91,6 +92,7 @@ export function CheckoutFlow({ onlineAvailable, manualAvailable }: { onlineAvail
             {step === 2 && <div><p className="text-[--color-text-muted]">{t("addonsBody")}</p><ul className="mt-6 space-y-3">{rows.flatMap(({ line }) => line.addons).length === 0 ? <li className="text-[--color-text-dim]">{t("noAddons")}</li> : rows.flatMap(({ line }) => ADDONS.filter((a) => line.addons.includes(a.slug)).map((a) => (<li key={`${line.slug}-${a.slug}`} className="flex justify-between gap-4 text-[15px]"><span className="text-[--color-text-muted]">{ar ? a.titleAr : a.titleEn}</span><span>{formatPrice(a.price, locale)}</span></li>)))}</ul></div>}
             {step === 3 && <div className="grid gap-5 sm:grid-cols-2">{field("country", "text", true)}{field("city", "text", true)}<div className="sm:col-span-2">{field("address")}</div>{field("taxNumber")}{field("coupon")}<label className="block sm:col-span-2"><span className="t-label text-[--color-text-dim]">{t("fields.notes")}</span><textarea rows={4} value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} className="mt-2 w-full rounded-[--radius-sm] border border-[--border-hairline] bg-[--color-bg] p-4 text-[15px] outline-none focus:border-[--color-brand]/60" /></label></div>}
             {step === 4 && <div>
+              {hasSubscription && <p role="status" className="mb-6 text-[--color-text-muted]">{ar ? "الدفع الإلكتروني والتجديد التلقائي غير متاحين للاشتراكات حالياً. يمكنك طلب عرض سعر أو اختيار التحويل البنكي إن كان متاحاً." : "Online payment and automatic renewal are unavailable for subscriptions. Request a quotation or choose bank transfer when available."}</p>}
               {!onlineAvailable && !requiresQuote && <p className="mb-6 flex items-start gap-3 rounded-[--radius-md] border border-[--border-hairline] bg-[--color-surface] p-4 text-[14px] leading-relaxed text-[--color-text-muted]"><AlertTriangle className="mt-0.5 size-4 shrink-0 text-[--color-text-dim]" aria-hidden />{t("noGatewayNotice")}</p>}
               <fieldset className="space-y-3"><legend className="t-label mb-3 text-[--color-text-dim]">{t("paymentMethod")}</legend>
                 {methods.map((m) => { const Icon = m === "online" ? CreditCard : m === "bank_transfer" ? Landmark : FileText; return (

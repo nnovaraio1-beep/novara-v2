@@ -18,6 +18,7 @@ const T: Record<PaymentStatus, PaymentStatus[]> = {
 export const canTransition = (from: PaymentStatus, to: PaymentStatus) => T[from].includes(to);
 
 export interface PaymentSession {
+  integrity?: string;
   provider: ProviderId; sessionId: string; redirectUrl: string | null;
   amountFils: number; currency: "JOD"; status: PaymentStatus;
 }

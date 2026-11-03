@@ -503,6 +503,9 @@ model Payment {
   id          String   @id @default(cuid())
   orderId     String
   provider    String
+  checkoutIntegrity String?
+  providerReference String? @unique
+  lastVerifiedAt DateTime?
   sessionId   String
   status      String   @default("pending")
   amountFils  Int
