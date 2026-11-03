@@ -30,7 +30,8 @@ export function CheckoutFlow({ onlineAvailable, manualAvailable }: { onlineAvail
   const [step, setStep] = useState<Step>(0);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [form, setForm] = useState({ fullName: "", email: "", phone: "", company: "", country: "Jordan", city: "", address: "", taxNumber: "", coupon: "", notes: "", acceptPolicies: false });
+  const [form, setForm] = useState({ fullName: "", email: "", phone: "", company: "", country: "Jordan", city: "", address: "",
+    billingState: "", billingPostcode: "", billingCountryCode: "JO", taxNumber: "", coupon: "", notes: "", acceptPolicies: false });
 
   const addonPrice = new Map(ADDONS.map((a) => [a.slug, a.price]));
   const rows = cart.lines.map((line) => ({ line, item: findItem(line.slug) })).filter((r): r is { line: typeof r.line; item: NonNullable<ReturnType<typeof findItem>> } => Boolean(r.item));
@@ -50,7 +51,10 @@ export function CheckoutFlow({ onlineAvailable, manualAvailable }: { onlineAvail
 
   const steps = ["info", "review", "addons", "billing", "payment"] as const;
   const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email);
-  const canAdvance = step === 0 ? form.fullName.length > 1 && emailOk : step === 3 ? form.city.length > 0 && form.country.length > 0 : true;
+  const canAdvance = step === 0 ? form.fullName.length > 1 && emailOk : step === 3 ? form.city.trim().length > 0 && form.country.trim().length > 0 &&
+    (!onlineAvailable || hasSubscription || (form.address.trim().length > 0 &&
+      form.billingState.trim().length > 0 && form.billingPostcode.trim().length > 0 &&
+      /^[A-Z]{2}$/.test(form.billingCountryCode.trim().toUpperCase()))) : true;
 
   async function submit() {
     setBusy(true); setError(null);
@@ -90,7 +94,12 @@ export function CheckoutFlow({ onlineAvailable, manualAvailable }: { onlineAvail
             {step === 0 && <div className="grid gap-5 sm:grid-cols-2">{field("fullName", "text", true)}{field("email", "email", true)}{field("phone", "tel")}{field("company")}</div>}
             {step === 1 && <ul className="space-y-4">{rows.map(({ line, item }) => (<li key={line.slug} className="flex justify-between gap-4 border-b border-[--border-hairline] pb-4 last:border-0"><div><p className="font-semibold">{ar ? item.titleAr : item.titleEn}</p><p className="text-[13px] text-[--color-text-dim]">{item.billing === "monthly" ? t("monthly") : t("oneTime")} · ×{line.quantity}</p></div><p className="shrink-0 font-semibold">{item.price === null ? t("quoteOnly") : formatPrice(item.price * line.quantity, locale)}</p></li>))}</ul>}
             {step === 2 && <div><p className="text-[--color-text-muted]">{t("addonsBody")}</p><ul className="mt-6 space-y-3">{rows.flatMap(({ line }) => line.addons).length === 0 ? <li className="text-[--color-text-dim]">{t("noAddons")}</li> : rows.flatMap(({ line }) => ADDONS.filter((a) => line.addons.includes(a.slug)).map((a) => (<li key={`${line.slug}-${a.slug}`} className="flex justify-between gap-4 text-[15px]"><span className="text-[--color-text-muted]">{ar ? a.titleAr : a.titleEn}</span><span>{formatPrice(a.price, locale)}</span></li>)))}</ul></div>}
-            {step === 3 && <div className="grid gap-5 sm:grid-cols-2">{field("country", "text", true)}{field("city", "text", true)}<div className="sm:col-span-2">{field("address")}</div>{field("taxNumber")}{field("coupon")}<label className="block sm:col-span-2"><span className="t-label text-[--color-text-dim]">{t("fields.notes")}</span><textarea rows={4} value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} className="mt-2 w-full rounded-[--radius-sm] border border-[--border-hairline] bg-[--color-bg] p-4 text-[15px] outline-none focus:border-[--color-brand]/60" /></label></div>}
+            {step === 3 && <div className="grid gap-5 sm:grid-cols-2">{field("country", "text", true)}{field("city", "text", true)}<div className="sm:col-span-2">{field("address", "text", onlineAvailable && !hasSubscription)}</div>
+                {onlineAvailable && !hasSubscription && <>
+                  <label className="block"><span className="t-label text-[--color-text-dim]">{ar ? "المنطقة / المحافظة" : "State / region"} *</span><input required value={form.billingState} onChange={e => setForm(f => ({ ...f, billingState: e.target.value }))} className="mt-2 h-12 w-full rounded-[--radius-sm] border border-[--border-hairline] bg-[--color-bg] px-4 text-[15px]" /></label>
+                  <label className="block"><span className="t-label text-[--color-text-dim]">{ar ? "الرمز البريدي" : "Postal code"} *</span><input required value={form.billingPostcode} onChange={e => setForm(f => ({ ...f, billingPostcode: e.target.value }))} className="mt-2 h-12 w-full rounded-[--radius-sm] border border-[--border-hairline] bg-[--color-bg] px-4 text-[15px]" /></label>
+                  <label className="block"><span className="t-label text-[--color-text-dim]">{ar ? "رمز الدولة (حرفان)" : "ISO country code (2 letters)"} *</span><input maxLength={2} required value={form.billingCountryCode} onChange={e => setForm(f => ({ ...f, billingCountryCode: e.target.value.toUpperCase() }))} className="mt-2 h-12 w-full rounded-[--radius-sm] border border-[--border-hairline] bg-[--color-bg] px-4 text-[15px]" /></label>
+                </>}{field("taxNumber")}{field("coupon")}<label className="block sm:col-span-2"><span className="t-label text-[--color-text-dim]">{t("fields.notes")}</span><textarea rows={4} value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} className="mt-2 w-full rounded-[--radius-sm] border border-[--border-hairline] bg-[--color-bg] p-4 text-[15px] outline-none focus:border-[--color-brand]/60" /></label></div>}
             {step === 4 && <div>
               {hasSubscription && <p role="status" className="mb-6 text-[--color-text-muted]">{ar ? "الدفع الإلكتروني والتجديد التلقائي غير متاحين للاشتراكات حالياً. يمكنك طلب عرض سعر أو اختيار التحويل البنكي إن كان متاحاً." : "Online payment and automatic renewal are unavailable for subscriptions. Request a quotation or choose bank transfer when available."}</p>}
               {!onlineAvailable && !requiresQuote && <p className="mb-6 flex items-start gap-3 rounded-[--radius-md] border border-[--border-hairline] bg-[--color-surface] p-4 text-[14px] leading-relaxed text-[--color-text-muted]"><AlertTriangle className="mt-0.5 size-4 shrink-0 text-[--color-text-dim]" aria-hidden />{t("noGatewayNotice")}</p>}
