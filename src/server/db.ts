@@ -9,7 +9,7 @@ import { PrismaClient } from "@prisma/client";
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 
 const databaseUrl = process.env.NEXT_PUBLIC_SITE_URL === "https://novara-hyperpay-staging.netlify.app"
-  ? (process.env.NETLIFY_DB_URL ?? process.env.DATABASE_URL)
+  ? process.env.NETLIFY_DB_URL
   : process.env.DATABASE_URL;
 
 export const db: PrismaClient | null = databaseUrl
