@@ -21,9 +21,9 @@
     "@prisma/client": "6.1.0",
     "framer-motion": "11.15.0",
     "lucide-react": "0.468.0",
-    "next": "^15.5.24",
+    "next": "^15.5.29",
     "next-intl": "^4.14.1",
-    "nodemailer": "^9.0.6",
+    "nodemailer": "^10.3.1",
     "react": "19.0.2",
     "react-dom": "19.0.2"
   },
@@ -34,13 +34,15 @@
     "@types/react": "19.0.2",
     "@types/react-dom": "19.0.2",
     "eslint": "^9.39.5",
-    "eslint-config-next": "^15.5.24",
+    "eslint-config-next": "^15.5.29",
     "prisma": "6.1.0",
     "tailwindcss": "4.1.14",
     "tsx": "^4.23.13",
     "typescript": "5.7.2"
   },
   "overrides": {
-    "postcss": "8.5.24"
+    "postcss": "8.5.24",
+    "sharp": "0.35.5",
+    "source-map-js": "1.2.2"
   }
 }
