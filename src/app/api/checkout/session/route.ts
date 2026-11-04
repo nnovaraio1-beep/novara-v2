@@ -8,6 +8,7 @@ import { hasTrustedOrigin, readJson, RequestTooLargeError, siteOrigin } from "@/
 import { orderAccessToken } from "@/lib/security/order-access";
 import { databaseConfigured } from "@/server/db";
 import { POLICY_VERSION } from "@/data/legal";
+import { validateHyperPayBilling } from "@/lib/payments/providers/hyperpay";
 
 export const runtime = "nodejs";
 
@@ -53,12 +54,14 @@ export async function POST(req: Request) {
   const configuredProvider = body.paymentMethod === "online" ? getProvider() : null;
   const onlineBilling = body.paymentMethod === "online" && configuredProvider?.id === "hyperpay";
   const names = body.fullName.trim().split(/\s+/);
-  if (onlineBilling && (
-    names.length < 2 ||
-    !body.address?.trim() || !body.billingState?.trim() ||
-    !body.billingPostcode?.trim() ||
-    !/^[A-Z]{2}$/.test(body.billingCountryCode ?? "")
-  )) return NextResponse.json({ error: "billing_details_required" }, { status: 400 });
+  const billing = onlineBilling ? {
+    givenName: names[0], surname: names.slice(1).join(" "),
+    street1: body.address?.trim() ?? "", city: body.city.trim(),
+    state: body.billingState?.trim() ?? "",
+    postcode: (body.billingPostcode?.trim() ?? "").replace(/[٠-٩۰-۹]/g, (digit) => String(digit.charCodeAt(0) & 15)),
+    country: body.billingCountryCode?.trim().toUpperCase() ?? "",
+  } : undefined;
+  if (billing && !validateHyperPayBilling(billing)) return NextResponse.json({ error: "billing_details_required" }, { status: 400 });
   if (configuredProvider && resolved.hasSubscription && !configuredProvider.supportsSubscriptions) return NextResponse.json({ error: "subscription_payment_unavailable" }, { status: 409 });
   const order = await repository.createOrder({ orderNumber: newOrderNumber(), status: mustQuote ? "draft" : "pending_payment", email: body.email, resolved });
   await repository.audit({ actor: `guest:${body.email}`, action: "order.created", entity: "order", entityId: order.id, metadata: { totalFils: resolved.totalFils, mustQuote, consent: { terms: true, privacy: true, refund: true, delivery: true, policyVersion: body.policyVersion, recordedAt: new Date().toISOString() } } });
@@ -76,15 +79,7 @@ export async function POST(req: Request) {
   let session;
   try {
     session = await provider.createPaymentSession({ orderId: order.id, amountFils: resolved.totalFils, currency: "JOD", customerEmail: body.email,
-      ...(onlineBilling ? { billing: {
-        givenName: names[0],
-        surname: names.slice(1).join(" "),
-        street1: body.address!.trim(),
-        city: body.city.trim(),
-        state: body.billingState!.trim(),
-        postcode: body.billingPostcode!.trim(),
-        country: body.billingCountryCode!,
-      } } : {}),
+      ...(billing ? { billing } : {}),
       returnUrl: `${origin}/${body.locale}/order/success?order=${encodeURIComponent(order.orderNumber)}&access=${encodeURIComponent(accessToken)}`, cancelUrl: `${origin}/${body.locale}/order/failed` });
   } catch {
     await repository.audit({ actor: `guest:${body.email}`, action: "payment.session_failed", entity: "order", entityId: order.id });

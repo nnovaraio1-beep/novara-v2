@@ -63,11 +63,17 @@ export function CheckoutFlow({ onlineAvailable, manualAvailable }: { onlineAvail
         body: JSON.stringify({ ...form, locale, acceptTerms: String(form.acceptPolicies), acceptPrivacy: String(form.acceptPolicies), acceptRefund: String(form.acceptPolicies), acceptDelivery: String(form.acceptPolicies), policyVersion: POLICY_VERSION, paymentMethod: method,
           lines: cart.lines.map((l) => ({ slug: l.slug, kind: findItem(l.slug)?.kind ?? "package", quantity: l.quantity, addons: l.addons })) }) });
       const data = await res.json();
-      if (!res.ok) { setError(data.error === "online_payment_unavailable" ? t("errors.unavailable") : t("errors.generic")); setBusy(false); return; }
+      if (!res.ok) {
+        if (data.error === "billing_details_required") setError(t("errors.billing"));
+        else if (data.error === "payment_session_failed") setError(t("errors.paymentSession"));
+        else setError(data.error === "online_payment_unavailable" ? t("errors.unavailable") : t("errors.generic"));
+        return;
+      }
       cart.clear();
       if (data.mode === "online" && data.redirectUrl) { window.location.href = data.redirectUrl; return; }
       router.push(`/order/success?order=${encodeURIComponent(data.orderNumber)}&access=${encodeURIComponent(data.accessToken)}&mode=${data.mode}`);
-    } catch { setError(t("errors.network")); setBusy(false); }
+    } catch { setError(t("errors.network")); }
+    finally { setBusy(false); }
   }
 
   if (cart.ready && rows.length === 0) return (
