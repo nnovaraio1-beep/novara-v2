@@ -24,10 +24,6 @@ function page(message: string, status = 200, content = "") {
   });
 }
 
-function configured(url: URL) {
-  return url.origin === USD_SANDBOX_ORIGIN && hyperpayUsdTestConfigured();
-}
-
 function equalSecret(provided: string, expected: string) {
   const digest = (value: string) => createHash("sha256").update(value).digest();
   return timingSafeEqual(digest(provided), digest(expected));
@@ -38,9 +34,10 @@ function access(id: string) {
 }
 
 export async function POST(req: Request) {
-  const url = new URL(req.url);
-  if (url.origin !== USD_SANDBOX_ORIGIN) return new NextResponse(null, { status: 404 });
-  if (!configured(url) || !db) return page("USD sandbox setup is incomplete.", 503);
+  // Netlify may rewrite the internal request origin. The deployment config
+  // selects the site; the browser Origin protects the checkout-creation POST.
+  if (process.env.NEXT_PUBLIC_SITE_URL !== USD_SANDBOX_ORIGIN) return new NextResponse(null, { status: 404 });
+  if (!hyperpayUsdTestConfigured() || !db) return page("USD sandbox setup is incomplete.", 503);
   if (req.headers.get("origin") !== USD_SANDBOX_ORIGIN) return page("Forbidden.", 403);
 
   const body = await req.formData().catch(() => null);
@@ -75,8 +72,8 @@ export async function POST(req: Request) {
 
 export async function GET(req: Request) {
   const url = new URL(req.url);
-  if (url.origin !== USD_SANDBOX_ORIGIN) return new NextResponse(null, { status: 404 });
-  if (!configured(url) || !db) return page("USD sandbox setup is incomplete.", 503);
+  if (process.env.NEXT_PUBLIC_SITE_URL !== USD_SANDBOX_ORIGIN) return new NextResponse(null, { status: 404 });
+  if (!hyperpayUsdTestConfigured() || !db) return page("USD sandbox setup is incomplete.", 503);
 
   const id = url.searchParams.get("attempt");
   if (!id) {
