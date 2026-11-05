@@ -35,9 +35,9 @@ export async function hyperpayRequest(path: string, body?: URLSearchParams) {
  * operations. Keep fulfillment gated by the settled-DB allowlist below.
  */
 const HYPERPAY_SUCCESS_PATTERN =
-  /^(?:000\\.000\\.\\d{3}|000\\.100\\.1\\d{2}|000\\.[36]\\d{2}\\.\\d{3}|000\\.400\\.1[12]0)$/;
+  /^(?:000\.000\.\d{3}|000\.100\.1\d{2}|000\.[36]\d{2}\.\d{3}|000\.400\.1[12]0)$/;
 const HYPERPAY_MANUAL_REVIEW_PATTERN =
-  /^(?:000\\.400\\.0(?!3)\\d{2}|000\\.400\\.100)$/;
+  /^(?:000\.400\.0(?!3)\d{2}|000\.400\.100)$/;
 const SETTLED_DEBIT_CODES = new Set([
   "000.000.000", // transaction succeeded
   "000.100.110", "000.100.111", "000.100.112", // merchant test successes
@@ -47,7 +47,7 @@ const SETTLED_DEBIT_CODES = new Set([
 
 export type HyperPayResultCategory = "success" | "manual_review" | "not_successful";
 export function classifyHyperPayResult(code: unknown): HyperPayResultCategory {
-  if (typeof code !== "string" || !/^\\d{3}\\.\\d{3}\\.\\d{3}$/.test(code)) return "not_successful";
+  if (typeof code !== "string" || !/^\d{3}\.\d{3}\.\d{3}$/.test(code)) return "not_successful";
   if (HYPERPAY_MANUAL_REVIEW_PATTERN.test(code)) return "manual_review";
   return HYPERPAY_SUCCESS_PATTERN.test(code) ? "success" : "not_successful";
 }
