@@ -24,7 +24,7 @@ function fromRow(row: OrderWithItems | null): OrderRecord | null {
     const addons = Array.isArray(item.addons) ? item.addons as { slug: string; priceFils: number }[] : [];
     return { slug: item.productSlug, kind: item.kind as "package" | "service", name: item.productName, unitFils: item.unitFils, billing: item.billingType as ResolvedLine["billing"], quantity: item.quantity, addonSlugs: addons.map((a) => a.slug), addonsFils: addons.reduce((sum, a) => sum + a.priceFils, 0), lineFils: item.lineFils };
   });
-  const resolved: ResolvedOrder = { lines, subtotalFils: row.subtotalFils, discountFils: row.discountFils, taxFils: row.taxFils, totalFils: row.totalFils, currency: "JOD", requiresQuote: lines.some((line) => line.billing === "custom"), hasSubscription: lines.some((line) => line.billing === "monthly") };
+  const resolved: ResolvedOrder = { lines, subtotalFils: row.subtotalFils, discountFils: row.discountFils, taxFils: row.taxFils, totalFils: row.totalFils, currency: row.currency === "USD" ? "USD" : "JOD", requiresQuote: lines.some((line) => line.billing === "custom"), hasSubscription: lines.some((line) => line.billing === "monthly") };
   return { id: row.id, orderNumber: row.orderNumber, status: row.status as OrderStatus, email: row.email, resolved, createdAt: row.createdAt.toISOString() };
 }
 

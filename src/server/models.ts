@@ -29,4 +29,4 @@ export interface Coupon { code: string; percentOff?: number; amountOffFils?: num
 export interface Subscription { id: string; planSlug: string; customerId: string; providerSubscriptionId?: string; status: SubscriptionStatus; startedAt?: string; renewsAt?: string; currentPeriodStart?: string; currentPeriodEnd?: string; manualRenewal: boolean }
 
 export interface OrderRecord { id: string; orderNumber: string; status: OrderStatus; email: string; resolved: ResolvedOrder; createdAt: string }
-export interface PaymentRecord { id: string; orderId: string; provider: ProviderId; sessionId: string; status: PaymentStatus; amountFils: number }
+export interface PaymentRecord { checkoutIntegrity?: string | null; id: string; orderId: string; provider: ProviderId; sessionId: string; status: PaymentStatus; amountFils: number }

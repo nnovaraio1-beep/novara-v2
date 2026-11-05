@@ -503,6 +503,9 @@ model Payment {
   id          String   @id @default(cuid())
   orderId     String
   provider    String
+  checkoutIntegrity String?
+  providerReference String? @unique
+  lastVerifiedAt DateTime?
   sessionId   String
   status      String   @default("pending")
   amountFils  Int
@@ -511,6 +514,21 @@ model Payment {
 
   @@unique([provider, sessionId])
   @@index([orderId])
+}
+
+model HyperPayUsdTest {
+  id                String    @id @default(uuid())
+  amountCents       Int
+  currency          String    @default("USD")
+  status            String    @default("creating")
+  sessionId         String?   @unique
+  checkoutIntegrity String?
+  providerReference String?   @unique
+  resultCode        String?
+  paymentBrand      String?
+  lastVerifiedAt    DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 }
 
 model Invoice {

@@ -27,7 +27,7 @@ export interface ResolvedLine {
 export interface ResolvedOrder {
   lines: ResolvedLine[];
   subtotalFils: number; discountFils: number; taxFils: number; totalFils: number;
-  currency: "JOD"; requiresQuote: boolean; hasSubscription: boolean;
+  currency: "JOD" | "USD"; requiresQuote: boolean; hasSubscription: boolean;
 }
 
 const parsedTaxRate = Number(process.env.TAX_RATE ?? "0");
