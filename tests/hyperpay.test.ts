@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   amountJod, verifiedDebit, hyperpayProvider, hyperpayConfigured,
-  validateHyperPayBilling, classifyHyperPayResult, hyperpayUsdTestConfigured,
+  validateHyperPayBilling, classifyHyperPayResult, hyperpayUsdTestConfigured, hyperpayRequest,
 } from "../src/lib/payments/providers/hyperpay";
 
 const expected = { orderId: "order-1", amountFils: 12340, currency: "JOD" };
@@ -74,11 +74,17 @@ test("USD sandbox configuration stays isolated to the dedicated test origin", ()
     process.env.HYPERPAY_ACCESS_TOKEN = "dummy-test-token";
     process.env.HYPERPAY_ENTITY_ID = "dummy-jod-entity";
     process.env.HYPERPAY_USD_ENTITY_ID = "dummy-usd-entity";
+    delete process.env.HYPERPAY_USD_ACCESS_TOKEN;
     process.env.HYPERPAY_USD_TEST_KEY = "x".repeat(32);
     process.env.NEXT_PUBLIC_SITE_URL = "https://nnovara.io";
     assert.equal(hyperpayUsdTestConfigured(), false);
     process.env.NEXT_PUBLIC_SITE_URL = "https://novara-hyperpay-staging.netlify.app";
+    assert.equal(hyperpayUsdTestConfigured(), false);
+    process.env.HYPERPAY_USD_ACCESS_TOKEN = "dummy-usd-token";
     assert.equal(hyperpayUsdTestConfigured(), true);
+    process.env.HYPERPAY_USD_ENTITY_ID = "dummy-jod-entity";
+    assert.equal(hyperpayUsdTestConfigured(), false);
+    process.env.HYPERPAY_USD_ENTITY_ID = "dummy-usd-entity";
     process.env.HYPERPAY_USD_TEST_KEY = "short";
     assert.equal(hyperpayUsdTestConfigured(), false);
   } finally {
@@ -93,6 +99,59 @@ test("USD debit is verified only for an exact USD order and amount", () => {
   assert.equal(verifiedDebit({ ...transaction, currency: "JOD" }, expectedUsd), false);
   assert.equal(verifiedDebit(transaction, { ...expectedUsd, currency: "JOD" }), false);
   assert.equal(verifiedDebit(transaction, { ...expectedUsd, amountFils: 2000 }), false);
+  for (const code of ["800.100.100", "100.396.101", "000.200.000", "000.400.000", "000.000.100"]) {
+    assert.equal(verifiedDebit({ ...transaction, result: { code } }, expectedUsd), false, code);
+  }
+  for (const patch of [
+    { id: undefined }, { merchantTransactionId: "another-attempt" }, { amount: "0.10" },
+    { amount: "100.00" }, { paymentType: "PA" }, { paymentBrand: ["VISA"] },
+  ]) assert.equal(verifiedDebit({ ...transaction, ...patch }, expectedUsd), false);
+  assert.equal(verifiedDebit({ ...transaction, paymentBrand: "MASTER" }, expectedUsd), true);
+});
+
+test("USD checkout and inquiry use the USD credentials and the exact sandbox amount", async () => {
+  const saved = { ...process.env };
+  const originalFetch = globalThis.fetch;
+  try {
+    Object.assign(process.env, {
+      NEXT_PUBLIC_SITE_URL: "https://novara-hyperpay-staging.netlify.app",
+      HYPERPAY_MODE: "test",
+      HYPERPAY_ACCESS_TOKEN: "dummy-jod-token",
+      HYPERPAY_ENTITY_ID: "dummy-jod-entity",
+      HYPERPAY_USD_ACCESS_TOKEN: "dummy-usd-token",
+      HYPERPAY_USD_ENTITY_ID: "dummy-usd-entity",
+      HYPERPAY_USD_TEST_KEY: "x".repeat(32),
+    });
+    const methods: string[] = [];
+    globalThis.fetch = async (input, init) => {
+      const url = new URL(String(input));
+      assert.equal(url.origin, "https://eu-test.oppwa.com");
+      assert.equal(new Headers(init?.headers).get("Authorization"), "Bearer dummy-usd-token");
+      methods.push(init!.method!);
+      if (init?.method === "POST") {
+        assert.equal(url.pathname, "/v1/checkouts");
+        const body = init.body as URLSearchParams;
+        for (const [key, value] of Object.entries({
+          amount: "1.00", currency: "USD", merchantTransactionId: "attempt-1", paymentType: "DB",
+          entityId: "dummy-usd-entity", testMode: "EXTERNAL", "customParameters[3DS2_enrolled]": "true",
+        })) assert.equal(body.get(key), value, key);
+        return Response.json({ id: "checkout-1", integrity: "sha256-abc=" });
+      }
+      assert.equal(url.pathname, "/v1/checkouts/checkout-1/payment");
+      assert.equal(url.searchParams.get("entityId"), "dummy-usd-entity");
+      return Response.json({ result: { code: "000.200.000" } });
+    };
+    const returnUrl = process.env.NEXT_PUBLIC_SITE_URL!;
+    const session = await hyperpayProvider.createPaymentSession({
+      orderId: "attempt-1", amountFils: 100 * 10, currency: "USD",
+      customerEmail: "test@example.com", billing, returnUrl, cancelUrl: returnUrl,
+    });
+    await hyperpayRequest(`/v1/checkouts/${session.sessionId}/payment`, undefined, "USD");
+    assert.deepEqual(methods, ["POST", "GET"]);
+  } finally {
+    process.env = saved;
+    globalThis.fetch = originalFetch;
+  }
 });
 
 test("3DS2 billing input is required and validated", () => {

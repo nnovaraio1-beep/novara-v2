@@ -45,7 +45,7 @@ Tap وMyFatoorah والبوابات الأخرى غير منفّذة؛ وضع م
 
 - لا تغيّر `HYPERPAY_ENTITY_ID` الحالي: يظل مستخدماً للدينار JOD.
 - أضف `HYPERPAY_USD_ENTITY_ID` بالقيمة التي أرسلها حمزة في إعدادات Netlify الخاصة بموقع الاختبار، في سياق Production الخاص بـ **staging** فقط، وليس موقع nnovara.io الحقيقي.
-- يُسمح بإنشاء جلسات USD فقط عندما يكون `NEXT_PUBLIC_SITE_URL=https://novara-hyperpay-staging.netlify.app` و`HYPERPAY_MODE=test`، مع ضبط `HYPERPAY_USD_TEST_KEY` عشوائي قوي (32 حرفاً على الأقل) في متغيرات البيئة السرية.
-- تم إعداد دعم اختيار Entity ID المنفصل والتحقق من عملة USD المخزنة للطلبات. **لم تُنشأ واجهة إدخال اختبار USD ولم تُنفّذ عملية USD بعد**. لا تعيد استخدام سلة Logo Starter بالدينار للدفع بالدولار.
-- اختبار USD يجب أن يستخدم مبلغا مستقلاً وواضحاً بالدولار وطلباً تجريبياً غير مرتبط بخدمة حقيقية، ويطابق `amount` و`currency` و`merchantTransactionId` و`paymentType=DB` و`paymentBrand` و`result.code` قبل تأكيده.
+- اضبط `HYPERPAY_USD_ACCESS_TOKEN` بتوكن Sandbox صالح ومصرّح له باستخدام معرّف USD، و`HYPERPAY_USD_TEST_KEY` بمفتاح عشوائي قوي (32 حرفاً على الأقل). احفظ القيم في سياق Production ونطاق Functions الخاصين بمشروع Staging فقط.
+- المسار `/api/payments/hyperpay-usd-test` متاح على المضيف الأساسي لـStaging فقط، مع `HYPERPAY_MODE=test` و`NEXT_PUBLIC_SITE_URL=https://novara-hyperpay-staging.netlify.app`. افتح جلسة الاختبار بإدخال مفتاح الاختبار في النموذج.
+- يحفظ جدول `HyperPayUsdTest` مبلغ 100 سنت. يرسل الخادم `1.00 USD` إلى Sandbox ويتحقق من حقول الخصم قبل حفظ `paid`. عند غياب نتيجة مؤكدة، استخدم رابط التحقق من العملية الحالية.
 - لا تستخدم رمز HyperPay التجريبي الذي ظهر سابقاً في لقطات الشاشة؛ اطلب تدويره قبل أي معاملات جديدة.

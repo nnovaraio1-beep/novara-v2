@@ -6,7 +6,8 @@ export const USD_SANDBOX_ORIGIN = "https://novara-hyperpay-staging.netlify.app";
 export function hyperpayUsdTestConfigured(): boolean {
   return process.env.NEXT_PUBLIC_SITE_URL === USD_SANDBOX_ORIGIN &&
     process.env.HYPERPAY_MODE === "test" &&
-    Boolean(process.env.HYPERPAY_ACCESS_TOKEN && process.env.HYPERPAY_ENTITY_ID && process.env.HYPERPAY_USD_ENTITY_ID) &&
+    Boolean(process.env.HYPERPAY_USD_ACCESS_TOKEN && process.env.HYPERPAY_USD_ENTITY_ID &&
+      process.env.HYPERPAY_USD_ENTITY_ID !== process.env.HYPERPAY_ENTITY_ID) &&
     Boolean(process.env.HYPERPAY_USD_TEST_KEY && process.env.HYPERPAY_USD_TEST_KEY.length >= 32);
 }
 export function hyperpayConfigured() {
@@ -20,16 +21,18 @@ export function amountJod(fils: number) {
   return `${Math.floor(fils / 1000)}.${String((fils % 1000) / 10).padStart(2, "0")}`;
 }
 export async function hyperpayRequest(path: string, body?: URLSearchParams, currency: "JOD" | "USD" = "JOD") {
-  if (!hyperpayConfigured()) throw new Error("HyperPay test configuration required");
-  if (currency === "USD" && !hyperpayUsdTestConfigured()) throw new Error("USD sandbox unavailable");
+  if (!(currency === "USD" ? hyperpayUsdTestConfigured() : hyperpayConfigured())) {
+    throw new Error("HyperPay test configuration required");
+  }
   const url = new URL(path, HYPERPAY_ORIGIN);
   if (url.origin !== HYPERPAY_ORIGIN) throw new Error("Invalid gateway origin");
   const entityId = currency === "USD" ? process.env.HYPERPAY_USD_ENTITY_ID! : process.env.HYPERPAY_ENTITY_ID!;
+  const token = currency === "USD" ? process.env.HYPERPAY_USD_ACCESS_TOKEN : process.env.HYPERPAY_ACCESS_TOKEN;
   if (body) body.set("entityId", entityId);
   else url.searchParams.set("entityId", entityId);
   const response = await fetch(url, {
     method: body ? "POST" : "GET", body,
-    headers: { Authorization: `Bearer ${process.env.HYPERPAY_ACCESS_TOKEN}` },
+    headers: { Authorization: `Bearer ${token}` },
     cache: "no-store", redirect: "error", signal: AbortSignal.timeout(15000),
   });
   if (!response.ok) throw new Error("Gateway request failed");
@@ -71,7 +74,7 @@ export function verifiedDebit(data: Record<string, unknown>, expected: { orderId
     && data.merchantTransactionId === expected.orderId && data.currency === expected.currency
     && typeof data.amount === "string" && /^\d+\.\d{2}$/.test(data.amount)
     && data.amount === (expected.amountFils % 10 === 0 ? amountJod(expected.amountFils) : "")
-    && data.paymentType === "DB" && ["VISA", "MASTER"].includes(String(data.paymentBrand));
+    && data.paymentType === "DB" && (data.paymentBrand === "VISA" || data.paymentBrand === "MASTER");
 }
 
 export function validateHyperPayBilling(billing: HyperPayBillingDetails): boolean {
