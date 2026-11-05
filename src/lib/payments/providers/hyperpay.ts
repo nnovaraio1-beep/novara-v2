@@ -2,6 +2,13 @@ import type { HyperPayBillingDetails, PaymentProvider } from "../types";
 
 // Deliberately not configurable: this implementation cannot contact live hosts.
 export const HYPERPAY_ORIGIN = "https://eu-test.oppwa.com";
+export const USD_SANDBOX_ORIGIN = "https://novara-hyperpay-staging.netlify.app";
+export function hyperpayUsdTestConfigured(): boolean {
+  return process.env.NEXT_PUBLIC_SITE_URL === USD_SANDBOX_ORIGIN &&
+    process.env.HYPERPAY_MODE === "test" &&
+    Boolean(process.env.HYPERPAY_ACCESS_TOKEN && process.env.HYPERPAY_ENTITY_ID && process.env.HYPERPAY_USD_ENTITY_ID) &&
+    Boolean(process.env.HYPERPAY_USD_TEST_KEY && process.env.HYPERPAY_USD_TEST_KEY.length >= 32);
+}
 export function hyperpayConfigured() {
   return process.env.HYPERPAY_MODE === "test" && Boolean(process.env.HYPERPAY_ACCESS_TOKEN && process.env.HYPERPAY_ENTITY_ID);
 }
@@ -12,12 +19,14 @@ export function amountJod(fils: number) {
   if (fils % 10 !== 0) throw new Error("JOD amount must be a whole hundredth");
   return `${Math.floor(fils / 1000)}.${String((fils % 1000) / 10).padStart(2, "0")}`;
 }
-export async function hyperpayRequest(path: string, body?: URLSearchParams) {
+export async function hyperpayRequest(path: string, body?: URLSearchParams, currency: "JOD" | "USD" = "JOD") {
   if (!hyperpayConfigured()) throw new Error("HyperPay test configuration required");
+  if (currency === "USD" && !hyperpayUsdTestConfigured()) throw new Error("USD sandbox unavailable");
   const url = new URL(path, HYPERPAY_ORIGIN);
   if (url.origin !== HYPERPAY_ORIGIN) throw new Error("Invalid gateway origin");
-  if (body) body.set("entityId", process.env.HYPERPAY_ENTITY_ID!);
-  else url.searchParams.set("entityId", process.env.HYPERPAY_ENTITY_ID!);
+  const entityId = currency === "USD" ? process.env.HYPERPAY_USD_ENTITY_ID! : process.env.HYPERPAY_ENTITY_ID!;
+  if (body) body.set("entityId", entityId);
+  else url.searchParams.set("entityId", entityId);
   const response = await fetch(url, {
     method: body ? "POST" : "GET", body,
     headers: { Authorization: `Bearer ${process.env.HYPERPAY_ACCESS_TOKEN}` },
@@ -90,7 +99,7 @@ export const hyperpayProvider: PaymentProvider = {
       "billing.country": billing.country,
       testMode: "EXTERNAL", "customParameters[3DS2_enrolled]": "true",
       integrity: "true",
-    }));
+    }), input.currency);
     if (typeof data.id !== "string" || !/^[A-Za-z0-9.-]{1,200}$/.test(data.id)) throw new Error("Invalid checkout");
     const url = new URL("/api/payments/hyperpay", input.returnUrl);
     const returnUrl = new URL(input.returnUrl);
@@ -98,7 +107,7 @@ export const hyperpayProvider: PaymentProvider = {
     url.searchParams.set("session", data.id);
     url.searchParams.set("locale", returnUrl.pathname.startsWith("/ar/") ? "ar" : "en");
     if (typeof data.integrity !== "string" || !/^sha(256|384|512)-[A-Za-z0-9+/=]+$/.test(data.integrity)) throw new Error("Missing widget integrity");
-    return { integrity: data.integrity, provider: "hyperpay", sessionId: data.id, redirectUrl: url.href, amountFils: input.amountFils, currency: "JOD", status: "pending" };
+    return { integrity: data.integrity, provider: "hyperpay", sessionId: data.id, redirectUrl: url.href, amountFils: input.amountFils, currency: input.currency, status: "pending" };
   },
   verifyPayment: unsupported, getPaymentStatus: unsupported, cancelPayment: unsupported,
   refundPayment: unsupported, verifyWebhook: unsupported,
