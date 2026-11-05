@@ -41,8 +41,8 @@ const HYPERPAY_MANUAL_REVIEW_PATTERN =
 const SETTLED_DEBIT_CODES = new Set([
   "000.000.000", // transaction succeeded
   "000.100.110", "000.100.111", "000.100.112", // merchant test successes
-  "000.300.000", // two-step transaction succeeded
-  "000.600.000", // transaction succeeded after external update
+  // Broader regex success categories (including 000.300 / 000.600) remain
+  // informational until confirmed as settled debit results for this merchant.
 ]);
 
 export type HyperPayResultCategory = "success" | "manual_review" | "not_successful";
