@@ -27,10 +27,37 @@ export async function hyperpayRequest(path: string, body?: URLSearchParams) {
   return response.json();
 }
 
+/**
+ * HyperPay result-code classes as requested by merchant support.
+ * See https://hyperpay.docs.oppwa.com/reference/resultCodes
+ * The published regex describes *API result categories*, not proof that money
+ * was captured. In particular it includes 3DS authentication and non-debit
+ * operations. Keep fulfillment gated by the settled-DB allowlist below.
+ */
+const HYPERPAY_SUCCESS_PATTERN =
+  /^(?:000\\.000\\.\\d{3}|000\\.100\\.1\\d{2}|000\\.[36]\\d{2}\\.\\d{3}|000\\.400\\.1[12]0)$/;
+const HYPERPAY_MANUAL_REVIEW_PATTERN =
+  /^(?:000\\.400\\.0(?!3)\\d{2}|000\\.400\\.100)$/;
+const SETTLED_DEBIT_CODES = new Set([
+  "000.000.000", // transaction succeeded
+  "000.100.110", "000.100.111", "000.100.112", // merchant test successes
+  "000.300.000", // two-step transaction succeeded
+  "000.600.000", // transaction succeeded after external update
+]);
+
+export type HyperPayResultCategory = "success" | "manual_review" | "not_successful";
+export function classifyHyperPayResult(code: unknown): HyperPayResultCategory {
+  if (typeof code !== "string" || !/^\\d{3}\\.\\d{3}\\.\\d{3}$/.test(code)) return "not_successful";
+  if (HYPERPAY_MANUAL_REVIEW_PATTERN.test(code)) return "manual_review";
+  return HYPERPAY_SUCCESS_PATTERN.test(code) ? "success" : "not_successful";
+}
+
 export function verifiedDebit(data: Record<string, unknown>, expected: { orderId: string; amountFils: number; currency: string }) {
   const result = data.result as { code?: string } | undefined;
-  // Strict allowlist: pending, review, registration and authorization are not paid.
-  const paid = ["000.000.000", "000.100.110", "000.100.111", "000.100.112"].includes(result?.code ?? "");
+  const code = result?.code;
+  // A successful 3DS challenge or successful API request is NOT sufficient
+  // for a settled charge. Require an explicit debit-success result as well.
+  const paid = classifyHyperPayResult(code) === "success" && SETTLED_DEBIT_CODES.has(code ?? "");
   return paid && typeof data.id === "string" && /^[A-Za-z0-9.-]{1,200}$/.test(data.id)
     && data.merchantTransactionId === expected.orderId && data.currency === expected.currency
     && typeof data.amount === "string" && /^\d+\.\d{2}$/.test(data.amount)
