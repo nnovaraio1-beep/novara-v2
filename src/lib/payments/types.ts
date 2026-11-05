@@ -30,16 +30,16 @@ export interface HyperPayBillingDetails {
 export interface PaymentSession {
   integrity?: string;
   provider: ProviderId; sessionId: string; redirectUrl: string | null;
-  amountFils: number; currency: "JOD"; status: PaymentStatus;
+  amountFils: number; currency: "JOD" | "USD"; status: PaymentStatus;
 }
-export interface WebhookResult { eventId: string; provider: ProviderId; sessionId: string; paymentStatus: PaymentStatus; amountFils: number; currency: "JOD"; providerReference?: string; }
+export interface WebhookResult { eventId: string; provider: ProviderId; sessionId: string; paymentStatus: PaymentStatus; amountFils: number; currency: "JOD" | "USD"; providerReference?: string; }
 
 /** Every provider implements this. The UI never imports a provider directly. */
 export interface PaymentProvider {
   readonly id: ProviderId;
   readonly supportsSubscriptions: boolean;
   readonly isOffline: boolean;
-  createPaymentSession(i: { orderId: string; amountFils: number; currency: "JOD"; customerEmail: string; billing?: HyperPayBillingDetails; returnUrl: string; cancelUrl: string }): Promise<PaymentSession>;
+  createPaymentSession(i: { orderId: string; amountFils: number; currency: "JOD" | "USD"; customerEmail: string; billing?: HyperPayBillingDetails; returnUrl: string; cancelUrl: string }): Promise<PaymentSession>;
   verifyPayment(sessionId: string): Promise<PaymentStatus>;
   cancelPayment(sessionId: string): Promise<PaymentStatus>;
   refundPayment(sessionId: string, amountFils?: number): Promise<PaymentStatus>;
