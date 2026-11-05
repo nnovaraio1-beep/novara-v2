@@ -30,14 +30,14 @@ export async function GET(req: Request) {
     const leased = await db.payment.updateMany({ where: { id: payment.id, status: "processing", OR: [{ lastVerifiedAt: null }, { lastVerifiedAt: { lt: new Date(Date.now() - 31000) } }] }, data: { lastVerifiedAt: new Date() } });
     if (!leased.count) return new NextResponse("Verification pending. Retry after 31 seconds.", { status: 429, headers: { "Retry-After": "31", "Cache-Control": "no-store" } });
     try {
-      const data = await hyperpayRequest(`/v1/checkouts/${encodeURIComponent(sessionId)}/payment`);
+      const data = await hyperpayRequest(`/v1/checkouts/${encodeURIComponent(sessionId)}/payment`, undefined, payment.order.currency === "USD" ? "USD" : "JOD");
       if (payment.amountFils !== payment.order.totalFils || !verifiedDebit(data, { orderId: payment.orderId, amountFils: payment.amountFils, currency: payment.order.currency })) {
         return new NextResponse("Payment not verified. Your order remains pending. Use your order link to check its status.", { status: 409, headers: { "Cache-Control": "no-store" } });
       }
       await db.$transaction(async tx => {
         const claimed = await tx.payment.updateMany({ where: { id: payment.id, status: "processing" }, data: { status: "paid", providerReference: data.id } });
         if (!claimed.count) return;
-        const order = await tx.order.updateMany({ where: { id: payment.orderId, status: "pending_payment", totalFils: payment.amountFils, currency: "JOD" }, data: { status: "confirmed" } });
+        const order = await tx.order.updateMany({ where: { id: payment.orderId, status: "pending_payment", totalFils: payment.amountFils, currency: payment.order.currency }, data: { status: "confirmed" } });
         if (!order.count) throw new Error("Order no longer payable");
         await tx.auditLog.create({ data: { action: "hyperpay.test_order_confirmed", entityType: "order", entityId: payment.orderId, after: { paymentId: payment.id, providerReference: data.id } } });
       });
