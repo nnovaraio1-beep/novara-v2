@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   amountJod, verifiedDebit, hyperpayProvider, hyperpayConfigured,
-  validateHyperPayBilling, classifyHyperPayResult,
+  validateHyperPayBilling, classifyHyperPayResult, hyperpayUsdTestConfigured,
 } from "../src/lib/payments/providers/hyperpay";
 
 const expected = { orderId: "order-1", amountFils: 12340, currency: "JOD" };
@@ -65,6 +65,34 @@ test("classification alone never marks an authentication, generic API, review or
   ]) {
     assert.equal(verifiedDebit({ ...debit, result: { code } }, expected), false, code);
   }
+});
+
+test("USD sandbox configuration stays isolated to the dedicated test origin", () => {
+  const saved = { ...process.env };
+  try {
+    process.env.HYPERPAY_MODE = "test";
+    process.env.HYPERPAY_ACCESS_TOKEN = "dummy-test-token";
+    process.env.HYPERPAY_ENTITY_ID = "dummy-jod-entity";
+    process.env.HYPERPAY_USD_ENTITY_ID = "dummy-usd-entity";
+    process.env.HYPERPAY_USD_TEST_KEY = "x".repeat(32);
+    process.env.NEXT_PUBLIC_SITE_URL = "https://nnovara.io";
+    assert.equal(hyperpayUsdTestConfigured(), false);
+    process.env.NEXT_PUBLIC_SITE_URL = "https://novara-hyperpay-staging.netlify.app";
+    assert.equal(hyperpayUsdTestConfigured(), true);
+    process.env.HYPERPAY_USD_TEST_KEY = "short";
+    assert.equal(hyperpayUsdTestConfigured(), false);
+  } finally {
+    process.env = saved;
+  }
+});
+
+test("USD debit is verified only for an exact USD order and amount", () => {
+  const transaction = { ...debit, amount: "1.00", currency: "USD" };
+  const expectedUsd = { orderId: "order-1", amountFils: 1000, currency: "USD" };
+  assert.equal(verifiedDebit(transaction, expectedUsd), true);
+  assert.equal(verifiedDebit({ ...transaction, currency: "JOD" }, expectedUsd), false);
+  assert.equal(verifiedDebit(transaction, { ...expectedUsd, currency: "JOD" }), false);
+  assert.equal(verifiedDebit(transaction, { ...expectedUsd, amountFils: 2000 }), false);
 });
 
 test("3DS2 billing input is required and validated", () => {
