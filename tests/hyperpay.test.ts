@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   amountJod, verifiedDebit, hyperpayProvider, hyperpayConfigured,
-  validateHyperPayBilling,
+  validateHyperPayBilling, classifyHyperPayResult,
 } from "../src/lib/payments/providers/hyperpay";
 
 const expected = { orderId: "order-1", amountFils: 12340, currency: "JOD" };
@@ -36,6 +36,35 @@ test("only matching settled debits pass verification", () => {
     { result: { code: "800.100.100" } }, { result: undefined },
   ]) assert.equal(verifiedDebit({ ...debit, ...patch }, expected), false, JSON.stringify(patch));
   assert.equal(verifiedDebit(debit, { ...expected, amountFils: 12345 }), false);
+});
+
+test("HyperPay result-code regex classifies success, review and unsuccessful states", () => {
+  for (const code of [
+    "000.000.000", "000.000.100", "000.100.105", "000.100.110",
+    "000.100.111", "000.100.112", "000.300.000", "000.310.100",
+    "000.600.000", "000.400.110", "000.400.120",
+  ]) assert.equal(classifyHyperPayResult(code), "success", code);
+  for (const code of [
+    "000.400.000", "000.400.010", "000.400.020", "000.400.040",
+    "000.400.050", "000.400.060", "000.400.100",
+  ]) assert.equal(classifyHyperPayResult(code), "manual_review", code);
+  for (const code of [
+    "000.200.000", "000.200.100", "800.100.100",
+    "000.400.030", "000.400.101", "000.400.111",
+    "100.400.500", "", "000.100.1130", "000.000.000extra",
+    null, undefined, 0,
+  ]) assert.equal(classifyHyperPayResult(code), "not_successful", String(code));
+});
+
+test("classification alone never marks an authentication, generic API, review or risk operation as paid", () => {
+  for (const code of [
+    "000.000.100", "000.100.105", "000.300.000",
+    "000.300.100", "000.310.100", "000.600.000",
+    "000.400.110", "000.400.120",
+    "000.400.000", "000.400.100", "000.200.000",
+  ]) {
+    assert.equal(verifiedDebit({ ...debit, result: { code } }, expected), false, code);
+  }
 });
 
 test("3DS2 billing input is required and validated", () => {
