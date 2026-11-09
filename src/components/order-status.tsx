@@ -5,7 +5,7 @@ import { Link } from "@/i18n/navigation";
 import { CheckCircle2, Clock, Landmark, FileText, Loader2 } from "lucide-react";
 import { formatPrice } from "@/lib/pricing";
 
-interface OrderData { orderNumber: string; status: string; paymentConfirmed: boolean; totalFils: number; requiresQuote: boolean; lines: { name: string; quantity: number; billing: string }[] }
+interface OrderData { orderNumber: string; status: string; paymentConfirmed: boolean; totalFils: number; currency: "JOD" | "USD"; requiresQuote: boolean; lines: { name: string; quantity: number; billing: string }[] }
 
 export function OrderStatusView({ orderNumber, accessToken, mode }: { orderNumber: string | null; accessToken: string | null; mode: string | null }) {
   const t = useTranslations("orderSuccess");
@@ -37,7 +37,7 @@ export function OrderStatusView({ orderNumber, accessToken, mode }: { orderNumbe
         </div>
         {data && <>
           <ul className="mt-8 space-y-3 border-t border-[--border-hairline] pt-6">{data.lines.map((l) => (<li key={l.name} className="flex justify-between gap-4 text-[15px]"><span className="text-[--color-text-muted]">{l.name} ×{l.quantity}</span><span className="text-[13px] text-[--color-text-dim]">{l.billing === "monthly" ? t("monthly") : t("oneTime")}</span></li>))}</ul>
-          {!data.requiresQuote && <div className="mt-6 flex justify-between border-t border-[--border-hairline] pt-6"><span className="t-label text-[--color-text-dim]">{t("total")}</span><span className="font-[family-name:--font-display] text-[24px] font-extrabold">{formatPrice(Math.round(data.totalFils / 1000), locale)}</span></div>}
+          {!data.requiresQuote && <div className="mt-6 flex justify-between border-t border-[--border-hairline] pt-6"><span className="t-label text-[--color-text-dim]">{t("total")}</span><span className="font-[family-name:--font-display] text-[24px] font-extrabold">{data.currency === "USD" ? `USD ${(data.totalFils / 1000).toFixed(2)}` : formatPrice(Math.round(data.totalFils / 1000), locale)}</span></div>}
         </>}
         {mode === "bank_transfer" && <p className="mt-6 rounded-[--radius-md] border border-[--border-hairline] bg-[--color-surface] p-5 text-[14px] leading-relaxed text-[--color-text-muted]">{t("bankInstructions")}</p>}
       </div>

@@ -470,6 +470,8 @@
     "serverPriceNotice": "The final amount is calculated on our server from the packages you selected. Prices here are for reference.",
     "errors": {
       "generic": "Something went wrong. Nothing was charged.",
+      "billing": "Check your first and last name, billing address, region, postal code, and country code.",
+      "paymentSession": "The payment provider could not open the payment page. No card details have been entered.",
       "network": "We could not reach the server. Nothing was charged.",
       "unavailable": "Online payment is unavailable right now. Please choose bank transfer or request a quotation."
     }
