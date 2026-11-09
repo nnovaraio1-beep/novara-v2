@@ -12,11 +12,14 @@ const currency = "USD";
 const path = "/api/payments/hyperpay-usd-test";
 const privateHeaders = { "Cache-Control": "no-store", "Referrer-Policy": "no-referrer", "X-Robots-Tag": "noindex, nofollow" };
 
-function page(message: string, status = 200, content = "") {
+// Only the key-entry form needs a same-origin referrer policy so browsers
+// send the Origin header on its navigation POST.
+function page(message: string, status = 200, content = "", referrerPolicy = privateHeaders["Referrer-Policy"]) {
   return new NextResponse(`<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NOVARA USD sandbox</title><main><h1>NOVARA USD sandbox</h1><p>${message}</p>${content}</main></html>`, {
     status,
     headers: {
       ...privateHeaders,
+      "Referrer-Policy": referrerPolicy,
       "Content-Type": "text/html; charset=utf-8",
       "X-Content-Type-Options": "nosniff",
       "Content-Security-Policy": "default-src 'none'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'",
@@ -78,7 +81,7 @@ export async function GET(req: Request) {
   const id = url.searchParams.get("attempt");
   if (!id) {
     return page("Fixed amount: 1.00 USD. Use a HyperPay sandbox card. This test is independent of the NOVARA store.", 200,
-      `<form method="post" action="${path}"><label>Sandbox access key <input type="password" name="key" required autocomplete="off"></label> <button>Open sandbox checkout</button></form>`);
+      `<form method="post" action="${path}"><label>Sandbox access key <input type="password" name="key" required autocomplete="off"></label> <button>Open sandbox checkout</button></form>`, "same-origin");
   }
   if (!/^[a-f0-9-]{36}$/.test(id) || !equalSecret(url.searchParams.get("access") ?? "", access(id))) {
     return page("Forbidden.", 403);
