@@ -79,6 +79,8 @@ test("USD sandbox configuration stays isolated to the dedicated test origin", ()
     process.env.NEXT_PUBLIC_SITE_URL = "https://nnovara.io";
     assert.equal(hyperpayUsdTestConfigured(), false);
     process.env.NEXT_PUBLIC_SITE_URL = "https://novara-hyperpay-staging.netlify.app";
+    assert.equal(hyperpayUsdTestConfigured(), true);
+    delete process.env.HYPERPAY_ACCESS_TOKEN;
     assert.equal(hyperpayUsdTestConfigured(), false);
     process.env.HYPERPAY_USD_ACCESS_TOKEN = "dummy-usd-token";
     assert.equal(hyperpayUsdTestConfigured(), true);
@@ -118,7 +120,6 @@ test("USD checkout and inquiry use the USD credentials and the exact sandbox amo
       HYPERPAY_MODE: "test",
       HYPERPAY_ACCESS_TOKEN: "dummy-jod-token",
       HYPERPAY_ENTITY_ID: "dummy-jod-entity",
-      HYPERPAY_USD_ACCESS_TOKEN: "dummy-usd-token",
       HYPERPAY_USD_ENTITY_ID: "dummy-usd-entity",
       HYPERPAY_USD_TEST_KEY: "x".repeat(32),
     });
@@ -126,7 +127,7 @@ test("USD checkout and inquiry use the USD credentials and the exact sandbox amo
     globalThis.fetch = async (input, init) => {
       const url = new URL(String(input));
       assert.equal(url.origin, "https://eu-test.oppwa.com");
-      assert.equal(new Headers(init?.headers).get("Authorization"), "Bearer dummy-usd-token");
+      assert.equal(new Headers(init?.headers).get("Authorization"), "Bearer dummy-jod-token");
       methods.push(init!.method!);
       if (init?.method === "POST") {
         assert.equal(url.pathname, "/v1/checkouts");
