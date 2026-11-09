@@ -3,10 +3,14 @@ import type { HyperPayBillingDetails, PaymentProvider } from "../types";
 // Deliberately not configurable: this implementation cannot contact live hosts.
 export const HYPERPAY_ORIGIN = "https://eu-test.oppwa.com";
 export const USD_SANDBOX_ORIGIN = "https://novara-hyperpay-staging.netlify.app";
+function hyperpayUsdAccessToken() {
+  // The shared token is authorized for both sandbox entities. Never use it in live.
+  return process.env.HYPERPAY_USD_ACCESS_TOKEN || process.env.HYPERPAY_ACCESS_TOKEN;
+}
 export function hyperpayUsdTestConfigured(): boolean {
   return process.env.NEXT_PUBLIC_SITE_URL === USD_SANDBOX_ORIGIN &&
     process.env.HYPERPAY_MODE === "test" &&
-    Boolean(process.env.HYPERPAY_USD_ACCESS_TOKEN && process.env.HYPERPAY_USD_ENTITY_ID &&
+    Boolean(hyperpayUsdAccessToken() && process.env.HYPERPAY_USD_ENTITY_ID &&
       process.env.HYPERPAY_USD_ENTITY_ID !== process.env.HYPERPAY_ENTITY_ID) &&
     Boolean(process.env.HYPERPAY_USD_TEST_KEY && process.env.HYPERPAY_USD_TEST_KEY.length >= 32);
 }
@@ -27,7 +31,7 @@ export async function hyperpayRequest(path: string, body?: URLSearchParams, curr
   const url = new URL(path, HYPERPAY_ORIGIN);
   if (url.origin !== HYPERPAY_ORIGIN) throw new Error("Invalid gateway origin");
   const entityId = currency === "USD" ? process.env.HYPERPAY_USD_ENTITY_ID! : process.env.HYPERPAY_ENTITY_ID!;
-  const token = currency === "USD" ? process.env.HYPERPAY_USD_ACCESS_TOKEN : process.env.HYPERPAY_ACCESS_TOKEN;
+  const token = currency === "USD" ? hyperpayUsdAccessToken() : process.env.HYPERPAY_ACCESS_TOKEN;
   if (body) body.set("entityId", entityId);
   else url.searchParams.set("entityId", entityId);
   const response = await fetch(url, {
