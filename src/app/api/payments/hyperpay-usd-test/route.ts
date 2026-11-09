@@ -81,7 +81,7 @@ export async function GET(req: Request) {
   const id = url.searchParams.get("attempt");
   if (!id) {
     return page("Fixed amount: 1.00 USD. Use a HyperPay sandbox card. This test is independent of the NOVARA store.", 200,
-      `<form method="post" action="${path}"><label>Sandbox access key <input type="password" name="key" required autocomplete="off"></label> <button>Open sandbox checkout</button></form>`, "same-origin");
+      `<form method="post"><label>Sandbox access key <input type="password" name="key" required autocomplete="off"></label> <button>Open sandbox checkout</button></form>`, "same-origin");
   }
   if (!/^[a-f0-9-]{36}$/.test(id) || !equalSecret(url.searchParams.get("access") ?? "", access(id))) {
     return page("Forbidden.", 403);
